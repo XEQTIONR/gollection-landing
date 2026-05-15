@@ -29,7 +29,9 @@ import GithubLogoOutlineIcon from './icons/github';
 import { Kbd } from '@/components/ui/kbd';
 
 type Props = {
-    breadcrumbs?: BreadcrumbItem[];
+    breadcrumbs?: BreadcrumbItem[]
+    sidebarOpen?: boolean
+    setSidebarOpen?: (open: boolean) => void
 };
 
 const mainNavItems: NavItem[] = [];
@@ -50,7 +52,7 @@ const mainNavItems: NavItem[] = [];
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
 
-export function AppHeader({ breadcrumbs = [] }: Props) {
+export function AppHeader({ breadcrumbs = [], sidebarOpen = false, setSidebarOpen = undefined }: Props) {
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl()
     const { url, props } = usePage<{ methods: Method[] }>()
     const isDocs = url.includes('docs')
@@ -191,7 +193,9 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             </SheetContent>
                         </Sheet>
                     </div> */}
-
+                    <Button onClick={() => setSidebarOpen?.(!sidebarOpen)} variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px] lg:hidden">
+                        <Menu className="h-5 w-5 stroke-foreground" />
+                    </Button>
                     <Link
                         href="/"
                         prefetch

@@ -1,17 +1,22 @@
 import { Head } from '@inertiajs/react';
-import { useState } from 'react';
-// import { dashboard } from '@/routes';
 
+import { useAppHeaderSidebar } from '@/contexts/app-header-sidebar-context';
+import { cn } from '@/lib/utils';
 import type { Method } from '@/types';
 
 export default function Docs({ methods }: { methods: Method[] }) {
+    const { sidebarOpen } = useAppHeaderSidebar();
 
     return (
         <>
             <Head title="Docs" />
             
             <div className="flex flex-row items-stretch gap-4 overflow-visible rounded-xl max-h-screen">
-                <div className="w-80 border-r py-4 px-6 h-full sticky top-18 max-h-[90vh]  overflow-y-scroll">
+                <div className={cn(
+                     "w-80 border-r py-4 px-6 h-full sticky top-18 max-h-[90vh] overflow-y-scroll",
+                     "lg:flex",
+                     !sidebarOpen && "hidden",
+                )}>
                     <ul className="">
                         <li className="mb-5 font-medium">
                             <a className="hover:underline" href={`#intro`}>
