@@ -193,9 +193,13 @@ export function AppHeader({ breadcrumbs = [], sidebarOpen = false, setSidebarOpe
                             </SheetContent>
                         </Sheet>
                     </div> */}
-                    <Button onClick={() => setSidebarOpen?.(!sidebarOpen)} variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px] lg:hidden">
-                        <Menu className="h-5 w-5 stroke-foreground" />
-                    </Button>
+                    {
+                        isDocs && (
+                            <Button onClick={() => setSidebarOpen?.(!sidebarOpen)} variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px] lg:hidden">
+                                <Menu className="h-5 w-5 stroke-foreground" />
+                            </Button>
+                        )
+                    }
                     <Link
                         href="/"
                         prefetch

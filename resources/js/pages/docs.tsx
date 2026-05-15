@@ -42,8 +42,8 @@ export default function Docs({ methods }: { methods: Method[] }) {
                         ))}
                     </ul>
                 </div>
-                <div className="h-full max-h-[90vh] overflow-y-scroll overflow-x-clip gap-12 px-4 py-2 transition-discrete duration-300">
-                    <div className="flex flex-col w-screen lg:w-full h-full pr-8 lg:pr-0">
+                <div className="h-full max-h-[90vh] overflow-y-scroll overflow-x-clip gap-12 px-2 py-2 transition-discrete duration-300">
+                    <div className="flex flex-col w-screen lg:w-full h-full pr-11 lg:pr-0">
                         <div id="intro">
                             <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline">Gollection</h2></a>
                             <p className="mt-4 mb-4 ml-1 font-sans2">
