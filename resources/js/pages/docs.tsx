@@ -13,36 +13,36 @@ export default function Docs({ methods }: { methods: Method[] }) {
             
             <div className="flex flex-row items-stretch gap-4 overflow-visible rounded-xl max-h-screen">
                 <div className={cn(
-                     "min-w-68 border-r py-4 px-6 h-full sticky top-18 max-h-[90vh] overflow-y-scroll",
-                     "lg:min-w-60 lg:flex",
-                     !sidebarOpen && "hidden",
+                     "border-r py-4 h-full sticky top-18 max-h-[90vh] overflow-y-scroll transition-discrete duration-300",
+                     "lg:min-w-60 lg:flex lg:px-6",
+                     sidebarOpen ? "min-w-68 w-68 pl-8"  : "min-w-0 w-0 px-0",
                 )}>
                     <ul className="">
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline" href={`#intro`}>
+                            <a className="hover:underline text-nowrap" href={`#intro`}>
                                 Gollection
                             </a>
                         </li>
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline" href={`#getting-started`}>
+                            <a className="hover:underline text-nowrap" href={`#getting-started`}>
                                 Getting Started
                             </a>
                         </li>
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline" href={`#available-methods`}>
+                            <a className="hover:underline text-nowrap" href={`#available-methods`}>
                                 Available Methods
                             </a>
                         </li>
                         {methods.map((method) => (
                             <li className="mb-3 pl-3" key={method.name}>
-                                <a className="hover:underline" href={`#${method.name}`}>
+                                <a className="hover:underline text-nowrap" href={`#${method.name}`}>
                                     {method.name}
                                 </a>
                             </li>
                         ))}
                     </ul>
                 </div>
-                <div className="h-full max-h-[90vh] overflow-y-scroll overflow-x-clip gap-12 px-4 py-2">
+                <div className="h-full max-h-[90vh] overflow-y-scroll overflow-x-clip gap-12 px-4 py-2 transition-discrete duration-300">
                     <div className="flex flex-col w-screen lg:w-full h-full pr-8 lg:pr-0">
                         <div id="intro">
                             <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline">Gollection</h2></a>
