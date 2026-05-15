@@ -1,18 +1,15 @@
 import { Head } from '@inertiajs/react';
+import { useState } from 'react';
 // import { dashboard } from '@/routes';
 
-interface Method {
-    name: string;
-    description: string;
-    code: string;
-}
+import type { Method } from '@/types';
 
 export default function Docs({ methods }: { methods: Method[] }) {
-    console.log(methods);
 
     return (
         <>
             <Head title="Docs" />
+            
             <div className="flex flex-row items-stretch gap-4 overflow-visible rounded-xl max-h-screen">
                 <div className="w-80 border-r py-4 px-6 h-full sticky top-18 max-h-[90vh]  overflow-y-scroll">
                     <ul className="">
