@@ -116,9 +116,9 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
 
                         </CommandEmpty>
-                        <CommandGroup heading={`${results.length} Results `}>
+                        <CommandGroup heading={`${results?.length ?? 0} Results `}>
                             {
-                                results.map((result) => (
+                                results?.map((result) => (
                                     <CommandItem onSelect={() => handleSelect(result)} key={result.name}>
                                         {result.name} <span className="text-xs text-ellipsis line-clamp-1 overflow-hidden text-muted-foreground">{result.description}</span>
                                     </CommandItem>
