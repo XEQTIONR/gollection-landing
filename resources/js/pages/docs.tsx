@@ -40,10 +40,20 @@ export default function Docs({ methods }: { methods: Method[] }) {
                         ))}
                     </ul>
                 </div>
-                <div className="flex flex-col h-full max-h-[90vh] overflow-y-scroll gap-10 px-4 py-2">
+                <div className="flex flex-col h-full max-h-[90vh] overflow-y-scroll gap-12 px-4 py-2">
                     <div id="intro" >
                         <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline">Gollection</h2></a>
-                        <p className="mt-4 mb-4 ml-1 font-sans2">A simple go library that provides convenient helpers to work with collections of data.</p>
+                        <p className="mt-4 mb-4 ml-1 font-sans2">
+                            A simple go library that provides convenient helpers to work with collections of data.
+                            A Collection is a group of related data like a <b>slice</b> or a <b>map</b>.
+                            
+                        </p>
+                        <p className="mt-4 mb-4 ml-1 font-sans2">
+                            The word <b>"Gollection"</b> is a portmanteau of the words <i>"go"</i> and <i>"collection"</i>.
+                        </p>
+                        <p className="mt-4 mb-4 ml-1 font-sans2">
+                            Current version is <b>1.0</b> <i>(Amethyst)</i>. 
+                        </p>
                     </div>
 
                     <div id="getting-started" >
