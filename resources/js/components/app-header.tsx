@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Menu, Search, Book } from 'lucide-react';
+import { LayoutGrid, Menu, Search, Book, Wind } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import AppLogo from '@/components/app-logo';
@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { docs } from '@/routes';
 import type { BreadcrumbItem, Method, NavItem } from '@/types';
 import GithubLogoOutlineIcon from './icons/github';
+import { Kbd } from '@/components/ui/kbd';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -54,7 +55,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
     const { url, props } = usePage<{ methods: Method[] }>()
     const isDocs = url.includes('docs')
 
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const [searchQ, setSearchQ] = useState('')
     const methods = props.methods
     const [results, setResults] = useState<Method[]>(methods)
@@ -77,6 +78,22 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
         debouncedSearch(searchQ)
     }, [searchQ, debouncedSearch])
 
+    useEffect(() => {
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.metaKey && event.key.toLowerCase() === 'k') {
+                setOpen(o => !o)
+            }
+        }
+
+        
+        document.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [searchQ])
+
     const handleSelect = (result: Method) => {
         setOpen(false)
         const elem = document.querySelector(`#${result.name}`)
@@ -90,10 +107,16 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
         <>
             <CommandDialog open={open} onOpenChange={setOpen}>
                 <Command shouldFilter={false} className="rounded-lg border">
-                    <CommandInput value={searchQ} onInput={e => setSearchQ(e.currentTarget.value)} placeholder="Type a command or search..." />
+                    <CommandInput value={searchQ} onInput={e => setSearchQ(e.currentTarget.value)} placeholder="Search the docs..." />
                     <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="Results">
+                        <CommandEmpty>
+                            
+                            <Wind className="size-4 mx-auto mb-3" />
+                            No results found.
+
+
+                        </CommandEmpty>
+                        <CommandGroup heading={`${results.length} Results `}>
                             {
                                 results.map((result) => (
                                     <CommandItem onSelect={() => handleSelect(result)} key={result.name}>
@@ -180,10 +203,14 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     {/* Desktop Navigation */}
                     <div className="hidden h-full items-center space-x-6 lg:flex px-10">
                         {isDocs && (
+                            <>
                             <Button className="cursor-text text-muted-foreground" variant="ghost" onClick={() => setOpen(true)}>
                                 <Search className="size-4" />
-                                Search
+                                Search ...
+                                
                             </Button>
+                            <Kbd className="ml-2 tracking-wide">⌘K</Kbd>
+                            </>
                         )}
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch space-x-2">
@@ -219,21 +246,23 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
                     <div className="ml-auto flex items-center space-x-2">
                         <div className="relative flex items-center space-x-1">
+                        {isDocs &&
                             <Button
                                 onClick={() => setOpen(true)}
                                 variant="ghost"
                                 size="icon"
-                                className="group h-9 w-9 cursor-pointer lg:hidden"
+                                className="group h-9 w-9 cursor-pointer lg:hidden text-muted-foreground"
                             >
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
                             </Button>
+                        }
                             <div className="ml-1 flex gap-5 items-center">
-                                {!isDocs && (
+                                {!isDocs &&
                                     <Link className='font-sans2 font-medium flex items-center text-sm gap-2 px-3 py-1 rounded text-foreground/80 hover:text-foreground border-2 border-background hover:border-foreground/80 transition-colors duration-300' href={docs()}>
                                         <Book className="size-4" /> 
                                         Docs
                                     </Link>
-                                )}
+                                }
                                 <GithubLogoOutlineIcon onClick={() => window.open('https://github.com/xeqtionr/gollection', '_blank')} className="size-5 cursor-pointer fill-foreground/30 hover:fill-foreground transition-colors duration-300"  />
                             </div>
                         </div>
