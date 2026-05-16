@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { animate, createTimeline, createTimer, set } from 'animejs';
+import { createTimeline } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -38,13 +38,9 @@ export default function Dashboard() {
         //         });
                 
         
-        const standalone: ReturnType<typeof animate>[] = [];
-        const timers: ReturnType<typeof createTimer>[] = [];
+        let phase2: ReturnType<typeof createTimeline> | null = null;
 
         if (rootWidth > 0) {
-            let cloneA = null;
-            let cloneB = null;
-
             timeline
                 .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
                 .set('#a', { left: 0 }, 0)
@@ -63,17 +59,23 @@ export default function Dashboard() {
                 .add('#a', { x: 0, duration: 500, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 3000)
                 .set('#b div', {  backgroundColor: '#888' }, 3000)
                 .call(() => {
-                    cloneA = document.getElementById('a')?.cloneNode(true) as HTMLElement;
-                    cloneB = document.getElementById('b')?.cloneNode(true) as HTMLElement;
+                    // Phase 2 must be a separate timeline — timeline.add() on the parent during play calls init() and replays #a/#b.
+                    const cloneA = document.getElementById('a')?.cloneNode(true) as HTMLElement;
+                    const cloneB = document.getElementById('b')?.cloneNode(true) as HTMLElement;
+
+                    if (!cloneA || !cloneB) {
+                        return;
+                    }
+
                     cloneA.id = 'cloneA';
                     cloneB.id = 'cloneB';
                     root.current?.appendChild(cloneA);
                     root.current?.appendChild(cloneB);
                     cloneA.style.zIndex = '-1';
                     cloneB.style.zIndex = '-1';
-                    
+
                     if (cloneA.children[2]) {
-                        cloneA.removeChild(cloneA.children[2])
+                        cloneA.removeChild(cloneA.children[2]);
                     }
 
                     if (cloneB.children[1]) {
@@ -81,85 +83,79 @@ export default function Dashboard() {
                     }
 
                     if (cloneB.children[2]) {
-                        cloneB.removeChild(cloneB.children[2])
+                        cloneB.removeChild(cloneB.children[2]);
                     }
 
-                    // Keep post-3500 motion off the timeline — new timeline children call init() and replay #a/#b.
-                    // Chain x steps in one animate() — a second animate() on the same target replaces the first.
                     const cloneHeight = aWidth * (2 / 3) + 15;
-                    standalone.push(
-                        // animate('#a,#b', { zIndex: 2 },),
-                        animate(cloneA, {
+                    const label = funcLabel.current;
+
+                    phase2 = createTimeline()
+                        .add(cloneA, {
                             zIndex: { to: 1, duration: 0, delay: 700 },
-                            // borderBottomColor: { to: 'hsla(255, 168, 40, .2)', duration: 0, delay: 1500 },
-                            height: [{ to: cloneHeight, duration: 0, delay: 700 },{ to: cloneHeight/2, duration: 0, delay: 1000 }],
+                            height: [
+                                { to: cloneHeight, duration: 0, delay: 700 },
+                                { to: cloneHeight / 2, duration: 0, delay: 1000 },
+                            ],
                             borderBottomWidth: { to: 0, duration: 0, delay: 1500 },
                             x: [
                                 { to: aWidth, duration: 0, delay: 700 },
-                                { to: aWidth - (aWidth), duration: 500, delay: 500 },
+                                { to: 0, duration: 500, delay: 500 },
                             ],
-                            onComplete: () => {
-                                root.current?.removeChild(document.getElementById('cloneA'));
-                            },
-                        }),
-                        animate(cloneB, {
+                        }, 0)
+                        .add(cloneB, {
                             zIndex: { to: 0, duration: 0, delay: 700 },
-                            height: [{ to: cloneHeight, duration: 0, delay: 700 },{ to: cloneHeight/2, duration: 0, delay: 1000 }],
-                        
+                            height: [
+                                { to: cloneHeight, duration: 0, delay: 700 },
+                                { to: cloneHeight / 2, duration: 0, delay: 1000 },
+                            ],
                             x: [
                                 { to: -(aWidth / 1.5), duration: 0, delay: 700 },
-                                { to: -(aWidth / 1.5) - (aWidth), duration: 500, delay: 500 },
+                                { to: -(aWidth / 1.5) - aWidth, duration: 500, delay: 500 },
                             ],
-                            onComplete: () => {
-                                root.current?.removeChild(document.getElementById('cloneB'));
-                            },
-                        }),
-                    )
-
-                    const label = funcLabel.current;
+                        }, 0);
 
                     if (label) {
-                        set(label, { opacity: 0, y: 0 });
-                        const labelAnim = animate(label, {
-                            y: ['0px', '-10px'],
-                            opacity: [0, 1],
-                            delay: 100,
-                            duration: 1000,
-                            textContent: 'gollection.CombineMap(fields, values)',
-                            composition: 'replace',
-                            onComplete: () => {
-                                timers.push(
-                                    createTimer({
-                                        duration: 1000,
-                                        onComplete: () => {
-                                            set(label, { opacity: 0, y: 0 });
-                                            standalone.push(
-                                                animate(label, {
-                                                    y: ['0px', '-10px'],
-                                                    opacity: [0, 1],
-                                                    delay: 100,
-                                                    duration: 1000,
-                                                    textContent: 'gollection.CrossJoin(fields, values)',
-                                                    composition: 'replace',
-                                                }),
-                                            );
-                                        },
-                                    }),
-                                );
-                            },
-                        });
-                        standalone.push(labelAnim);
+                        phase2
+                            .set(label, { opacity: 0, y: 0 }, 1200)
+                            .add(label, {
+                                y: '-10px',
+                                opacity: 1,
+                                delay: 100,
+                                duration: 1000,
+                                textContent: 'gollection.CombineMap(fields, values)',
+                            }, 1200)
+                            .set(label, { opacity: 0, y: 0 }, 3300)
+                            .add(label, {
+                                y: '-10px',
+                                opacity: 1,
+                                delay: 100,
+                                duration: 1000,
+                                textContent: 'gollection.CrossJoin(fields, values)',
+                            }, 3300);
                     }
+
+                    phase2.call(() => {
+                        const cloneAEl = document.getElementById('cloneA');
+                        const cloneBEl = document.getElementById('cloneB');
+
+                        if (cloneAEl && root.current?.contains(cloneAEl)) {
+                            root.current.removeChild(cloneAEl);
+                        }
+
+                        if (cloneBEl && root.current?.contains(cloneBEl)) {
+                            root.current.removeChild(cloneBEl);
+                        }
+                    }, 4500);
+
+                    phase2.play();
                 }, 3500)
-                // .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'ANDSA' }, 4500)
         }
 
         timeline.play();
 
         return () => {
             timeline.revert();
-            standalone.forEach((a) => a.revert());
-            timers.forEach((t) => t.revert());
+            phase2?.revert();
         };
     }, []);
 
