@@ -19,7 +19,6 @@ export default function Dashboard() {
 
 
         const rootWidth = root.current?.clientWidth || 0;
-        const rootHeight = root.current?.clientHeight || 0;
         const aWidth = document.getElementById('a')?.clientWidth || 0;
 
         console.log({aWidth})
@@ -27,6 +26,7 @@ export default function Dashboard() {
         
         if (rootWidth > 0) {
             timeline.set('#a,#b', {
+                top: aWidth/3,
                 borderWidth: '5px',
                 borderColor: 'oklch(0.5434 0.1855 259.82)'
             },0);
@@ -40,7 +40,7 @@ export default function Dashboard() {
             },0)
 
             if (funcLabel.current) {
-                funcLabel.current!.textContent = 'gollection.Join(slice1, slice2)';
+                funcLabel.current!.textContent = 'gollection.Combine(fields, values)';
                 funcLabel.current!.style.opacity = '0';
                 
             }
@@ -49,15 +49,15 @@ export default function Dashboard() {
                 backgroundColor: '#2369d9'
             },0)
 
-            // timeline.add('#funcLabel', {
-            //     y: '-10px',
-            //     opacity: 1,
-            //     delay: 100,
-            //     duration: 1000
-            // }, 0);
+            timeline.add('#funcLabel', {
+                y: '-10px',
+                opacity: 1,
+                delay: 100,
+                duration: 1000
+            }, 0);
 
             timeline.add('#a', {
-                zIndex: 10,
+                zIndex: 2,
                 duration: 500,
                 delay: 1000,
                 x: `${aWidth/2}px`,
@@ -70,11 +70,6 @@ export default function Dashboard() {
                 delay: 1000,
                 x: `-${aWidth/2}px`,
             },0)
-
-            // timeline.add('#a, #b', {
-            //     duration: 100,
-            //     borderWidth: '0px',
-            // }, 1500)
 
             timeline.add('#a div', {
                 duration: 500,
@@ -110,11 +105,12 @@ export default function Dashboard() {
 
             timeline.add('#b', {
                 duration: 500,
-                x: `-${aWidth * 1.17}px`,
+                x: -(aWidth*1.667)
                 //y: `-`
             },3000);
 
             timeline.add('#a', {
+                x: 0,
                 duration: 500,
                 height: `${aWidth + 15}px`,
                 width: `${aWidth * (2/3) + 15}px`,
@@ -124,25 +120,7 @@ export default function Dashboard() {
             timeline.set('#b div', {
                 backgroundColor: '#888',
             },3000);
-
-            // timeline.add('#a div', {
-            //     alignItems: 'end',
-            //     duration: 500,
-            //     // height: `${aWidth + 15}px`,
-            //     width: `${50}px`,
-            //     // y: (_, i: number) => `${(i%3) * (aWidth/3)}px`,
-            // },3000);
         }
-
-        // timeline.add('#a,#b', {
-        //     backgroundColor: '#4287f5',
-            
-        // });
-
-        // timeline.add('#a div,#b div', {
-        //     backgroundColor: '#19bf77',
-            
-        // });
 
         timeline.play();
         // scope.current = createScope({ root }).add( self => {
@@ -194,19 +172,19 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl py-4 px-6">
                 <div className="relative">
-                    <div ref={root} className="h-80 w-full lg:w-1/2 absolute top-0 lg:top-auto lg:bottom-0 right-0 ">
-                        <span className="absolute top-0 left-0" ref={funcLabel} id="funcLabel"></span>
-                        <Collection top={8} left={0} id="a" items={['id','age','n']} />
-                        <Collection top={8} left={0} isRight={true} id="b" items={[511,21,6]} />
+                    <div ref={root} className="h-80 w-full lg:w-1/2 absolute top-20 lg:top-10 z-10">
+                        <span className="absolute top-0 left-0 font-mono text-xs md:text-base text-muted-foreground border py-2 px-4 rounded-md" ref={funcLabel} id="funcLabel"></span>
+                        <Collection id="a" items={['id','age','n']} />
+                        <Collection id="b" items={[511,21,6]} />
                     </div>
-                    <h1 className="text-4xl lg:text-7xl font-semibold uppercase mt-[35vh] md:mt-[30vh] tracking-wide font-brand">
+                    <h1 className="text-4xl lg:text-7xl font-semibold uppercase mt-[35vh] md:mt-[30vh] tracking-wide font-brand z-50 relative">
                         Gollection
                         <span className="text-base ml-3 lowercase">v1.0</span>
                     </h1>
-                    <p className="text-lg lg:text-xl text-muted-foreground lg:ml-2 md:max-w-[50vw]">
+                    <p className="text-lg lg:text-xl text-muted-foreground lg:ml-2 md:max-w-[50vw] z-50 relative">
                        A simple Golang library that provides convenient helpers to work with collections of data.
                     </p>
-                    <div className="flex gap-4.5 mt-6">
+                    <div className="flex gap-4.5 mt-6 z-50 relative">
                        <Button className="cursor-pointer" onClick={() => router.visit(docs())} size="lg">Read the Docs</Button>
                        <Button className="cursor-pointer" onClick={() => window.location.href = 'https://github.com/xeqtionr/gollection'} variant="outline" size="lg">View on GitHub</Button>
                     </div>
@@ -216,9 +194,7 @@ export default function Dashboard() {
     );
 }
 
-function Collection({ id, items, top = 0, left = 0, isRight = false, }: { id: string, items: any[], top?: number, left?: number, isRight?: boolean }) {
-    
-
+function Collection({ id, items }: { id: string, items: any[] }) {
     return (
         <div 
             id={id}
@@ -226,7 +202,7 @@ function Collection({ id, items, top = 0, left = 0, isRight = false, }: { id: st
         >
             {
                 items.map(i => (
-                    <div className="size-10 rounded bg-[#2369d9] flex  items-center justify-center shrink-0">
+                    <div className="size-7 md:size-10 lg:size-12 rounded bg-[#2369d9] flex  items-center justify-center shrink-0">
                         <h6 className="text-white text-sm font-medium text-center">{i}</h6>
                     </div>
                 ))
