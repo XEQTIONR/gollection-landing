@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { animate, createTimeline, set } from 'animejs';
+import { animate, createTimeline, createTimer, set } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -39,6 +39,7 @@ export default function Dashboard() {
                 
         
         const standalone: ReturnType<typeof animate>[] = [];
+        const timers: ReturnType<typeof createTimer>[] = [];
 
         if (rootWidth > 0) {
             let cloneA = null;
@@ -97,6 +98,9 @@ export default function Dashboard() {
                                 { to: aWidth, duration: 0, delay: 700 },
                                 { to: aWidth - (aWidth), duration: 500, delay: 500 },
                             ],
+                            onComplete: () => {
+                                root.current?.removeChild(document.getElementById('cloneA'));
+                            },
                         }),
                         animate(cloneB, {
                             zIndex: { to: 0, duration: 0, delay: 700 },
@@ -106,24 +110,48 @@ export default function Dashboard() {
                                 { to: -(aWidth / 1.5), duration: 0, delay: 700 },
                                 { to: -(aWidth / 1.5) - (aWidth), duration: 500, delay: 500 },
                             ],
+                            onComplete: () => {
+                                root.current?.removeChild(document.getElementById('cloneB'));
+                            },
                         }),
                     )
 
                     const label = funcLabel.current;
 
                     if (label) {
-                        set(label, { opacity: 0, y: 0 })
-                        standalone.push(
-                            animate(label, {
-                                y: '-10px',
-                                opacity: 1,
-                                delay: 100,
-                                duration: 1000,
-                                textContent: 'gollection.CombineMap(fields, values)',
-                            }),
-                        )
+                        set(label, { opacity: 0, y: 0 });
+                        const labelAnim = animate(label, {
+                            y: ['0px', '-10px'],
+                            opacity: [0, 1],
+                            delay: 100,
+                            duration: 1000,
+                            textContent: 'gollection.CombineMap(fields, values)',
+                            composition: 'replace',
+                            onComplete: () => {
+                                timers.push(
+                                    createTimer({
+                                        duration: 1000,
+                                        onComplete: () => {
+                                            set(label, { opacity: 0, y: 0 });
+                                            standalone.push(
+                                                animate(label, {
+                                                    y: ['0px', '-10px'],
+                                                    opacity: [0, 1],
+                                                    delay: 100,
+                                                    duration: 1000,
+                                                    textContent: 'gollection.CrossJoin(fields, values)',
+                                                    composition: 'replace',
+                                                }),
+                                            );
+                                        },
+                                    }),
+                                );
+                            },
+                        });
+                        standalone.push(labelAnim);
                     }
                 }, 3500)
+                // .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'ANDSA' }, 4500)
         }
 
         timeline.play();
@@ -131,49 +159,8 @@ export default function Dashboard() {
         return () => {
             timeline.revert();
             standalone.forEach((a) => a.revert());
+            timers.forEach((t) => t.revert());
         };
-        // scope.current = createScope({ root }).add( self => {
-        //     // Every anime.js instance declared here is now scoped to <div ref={root}>
-        //     // Created a bounce animation loop
-        //     animate('#a', {
-        //       x: '7.7rem',
-        //     //   scale: [
-        //     //     { to: 1.25, ease: 'inOut(3)', duration: 200 },
-        //     //     { to: 1, ease: spring({ bounce: .7 }) }
-        //     //   ],
-        //       loop: true,
-        //       loopDelay: 250,
-        //     });
-
-        //     animate('#b', {
-        //         x: '-7.7rem',
-        //         // scale: [
-        //         //   { to: 1.25, ease: 'inOut(3)', duration: 200 },
-        //         //   { to: 1, ease: spring({ bounce: .7 }) }
-        //         // ],
-        //         loop: true,
-        //         loopDelay: 250,
-        //       });
-            
-        //     // Make the logo draggable around its center
-        //     // createDraggable('#a', {
-        //     //   container: [0, 0, 0, 0],
-        //     //   releaseEase: spring({ bounce: .7 })
-        //     // });
-      
-        //     // Register function methods to be used outside the useEffect
-        //     // self.add('rotateLogo', (i) => {
-        //     //   animate('.logo', {
-        //     //     rotate: i * 360,
-        //     //     ease: 'out(4)',
-        //     //     duration: 1500,
-        //     //   });
-        //     // });
-      
-        //   });
-      
-          // Properly cleanup all anime.js instances declared inside the scope
-        //   return () => scope.current?.revert()
     }, []);
 
     return (
