@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { createTimeline, utils } from 'animejs';
+import { createTimeline } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -11,29 +11,61 @@ export default function Dashboard() {
     const funcLabel = useRef<HTMLSpanElement | null>(null);
 
     useEffect(() => {
+        const LOOP_DELAY = 1000;
+        let cancelled = false;
+        let loopTimeout: ReturnType<typeof setTimeout> | undefined;
 
-        const timeline = createTimeline({
-            // loop: true,
-            // loopDelay: 1000,
-            // onComplete: () => {
-            //     console.log('onComplete')
-            // }
-        });
-
-
-
-        const rootWidth = root.current?.clientWidth || 0;
-        const aWidth = document.getElementById('a')?.clientWidth || 0;
-
-        console.log({aWidth})
-                
-        
+        let timeline: ReturnType<typeof createTimeline> | null = null;
         let phase2: ReturnType<typeof createTimeline> | null = null;
         let phase3: ReturnType<typeof createTimeline> | null = null;
         let phase4: ReturnType<typeof createTimeline> | null = null;
 
-        if (rootWidth > 0) {
-            timeline
+        const rootWidth = root.current?.clientWidth || 0;
+        const aWidth = document.getElementById('a')?.clientWidth || 0;
+
+        const removeDynamicClones = () => {
+            root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove());
+        };
+
+        const resetSourceElements = () => {
+            const aLabels = ['id', 'age', 'n'];
+            document.querySelectorAll('#a div h6').forEach((el, i) => {
+                if (aLabels[i]) {
+                    el.textContent = aLabels[i];
+                }
+            });
+        };
+
+        const cleanup = () => {
+            timeline?.revert();
+            phase2?.revert();
+            phase3?.revert();
+            phase4?.revert();
+            timeline = phase2 = phase3 = phase4 = null;
+            removeDynamicClones();
+            resetSourceElements();
+        };
+
+        const scheduleRestart = () => {
+            if (cancelled) {
+                return;
+            }
+
+            loopTimeout = setTimeout(() => {
+                if (!cancelled) {
+                    runSequence();
+                }
+            }, LOOP_DELAY);
+        };
+
+        const runSequence = () => {
+            if (cancelled || rootWidth <= 0) {
+                return;
+            }
+
+            cleanup();
+
+            timeline = createTimeline()
                 .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
                 .set('#a', { left: 0 }, 0)
                 .set('#b', { left: aWidth*2 }, 0)
@@ -125,7 +157,7 @@ export default function Dashboard() {
                             root.current.removeChild(cloneBEl);
                         }
                         
-                        timeline.revert()
+                        timeline?.revert()
                         
                         phase3 = createTimeline()
 
@@ -180,7 +212,9 @@ export default function Dashboard() {
                                     bClones.push(clones);
                                 })
 
-                                phase4 = createTimeline()
+                                phase4 = createTimeline({
+                                    onComplete: scheduleRestart,
+                                });
 
                                 for (let i = 0; i < 3; i++) {
                                     // console.log('aclones i', aClones[i])
@@ -241,16 +275,17 @@ export default function Dashboard() {
                     }, 3000);
 
                     phase2.play();
-                }, 3500)
-        }
+                }, 3500);
 
-        timeline.play();
+            timeline.play();
+        };
+
+        runSequence();
 
         return () => {
-            timeline.revert();
-            phase2?.revert();
-            phase3?.revert();
-            phase4?.revert();
+            cancelled = true;
+            clearTimeout(loopTimeout);
+            cleanup();
         };
     }, []);
 
