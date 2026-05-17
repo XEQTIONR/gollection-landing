@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { createTimeline } from 'animejs';
+import { createTimeline, utils } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -12,16 +12,12 @@ export default function Dashboard() {
 
     useEffect(() => {
 
-        // if (funcLabel.current) {
-        //     funcLabel.current!.textContent = 'gollection.Combine(fields, values)';
-        //     funcLabel.current!.style.opacity = '0';
-            
-        // }
-
         const timeline = createTimeline({
             // loop: true,
-            //loopDelay: 1000,
-            // onComplete: utils.cleanInlineStyles
+            // loopDelay: 1000,
+            // onComplete: () => {
+            //     console.log('onComplete')
+            // }
         });
 
 
@@ -30,15 +26,11 @@ export default function Dashboard() {
         const aWidth = document.getElementById('a')?.clientWidth || 0;
 
         console.log({aWidth})
-        //(document.querySelector('#a,#b') as HTMLElement)?.style.backgroundColor = '#0000FF';
-        
-        // const timer1 = createTimer({
-        //             duration: 500,
-        //             onUpdate: _ => funcLabel.current!.textContent = 'gollection.CombineMap(fields, values)'
-        //         });
                 
         
         let phase2: ReturnType<typeof createTimeline> | null = null;
+        let phase3: ReturnType<typeof createTimeline> | null = null;
+        let phase4: ReturnType<typeof createTimeline> | null = null;
 
         if (rootWidth > 0) {
             timeline
@@ -87,7 +79,7 @@ export default function Dashboard() {
                     }
 
                     const cloneHeight = aWidth * (2 / 3) + 15;
-                    const label = funcLabel.current;
+                    const label = funcLabel.current!
 
                     phase2 = createTimeline()
                         .add(cloneA, {
@@ -101,7 +93,7 @@ export default function Dashboard() {
                                 { to: aWidth, duration: 0, delay: 700 },
                                 { to: 0, duration: 500, delay: 500 },
                             ],
-                        }, 0)
+                        }, 600)
                         .add(cloneB, {
                             zIndex: { to: 0, duration: 0, delay: 700 },
                             height: [
@@ -112,27 +104,14 @@ export default function Dashboard() {
                                 { to: -(aWidth / 1.5), duration: 0, delay: 700 },
                                 { to: -(aWidth / 1.5) - aWidth, duration: 500, delay: 500 },
                             ],
-                        }, 0);
-
-                    if (label) {
-                        phase2
-                            .set(label, { opacity: 0, y: 0 }, 1200)
-                            .add(label, {
-                                y: '-10px',
-                                opacity: 1,
-                                delay: 100,
-                                duration: 1000,
-                                textContent: 'gollection.CombineMap(fields, values)',
-                            }, 1200)
-                            .set(label, { opacity: 0, y: 0 }, 3300)
-                            .add(label, {
-                                y: '-10px',
-                                opacity: 1,
-                                delay: 100,
-                                duration: 1000,
-                                textContent: 'gollection.CrossJoin(fields, values)',
-                            }, 3300);
-                    }
+                        }, 600)
+                        .add(label, {
+                            y: [0, -10],
+                            opacity: [0, 1],
+                            delay: 0,
+                            duration: 1000,
+                            textContent: 'gollection.CombineMap(fields, values)',
+                        }, 400)
 
                     phase2.call(() => {
                         const cloneAEl = document.getElementById('cloneA');
@@ -145,7 +124,121 @@ export default function Dashboard() {
                         if (cloneBEl && root.current?.contains(cloneBEl)) {
                             root.current.removeChild(cloneBEl);
                         }
-                    }, 4500);
+                        
+                        timeline.revert()
+                        
+                        phase3 = createTimeline()
+
+                        phase3
+                            .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                            .set('#a', { left: 0 }, 0)
+                            .set('#b', { left: aWidth*2 }, 0)
+                            .set('#a div', { textContent: (_, i: number) => {
+                                switch (i) {
+                                    case 0:
+                                        return 'joe';
+                                    case 1:
+                                        return 'fin';
+                                    case 2:
+                                        return 'tim';
+                                }
+                            } }, 0)
+                            .add('#funcLabel', { y: '-10px', opacity: 1, delay: 0, duration: 1000, textContent: 'gollection.CrossJoin(fields, values)' }, 0)
+                            .call(() => {
+                                const aDivs = document.querySelectorAll('#a div');
+                                const bDivs = document.querySelectorAll('#b div');
+
+
+                                const aClones: HTMLElement[][] = [];
+                                const bClones: HTMLElement[][] = [];
+
+                                aDivs.forEach((aDiv, j) => {
+                                    const clones = [];
+
+                                    for (let i = 0; i < 3; i++) {
+                                        const clone = aDiv.cloneNode(true) as HTMLElement;
+                                        clone.id = `cloneA-${j}-copy-${i}`;
+                                        clone.style.opacity = '0';
+                                        root.current?.appendChild(clone);
+                                        clones.push(clone);
+                                    }
+
+                                    aClones.push(clones);
+                                })
+
+                                bDivs.forEach((bDiv, j) => {
+                                    const clones = [];
+
+                                    for (let i = 0; i < 3; i++) {
+                                        const clone = bDiv.cloneNode(true) as HTMLElement;
+                                        clone.id = `cloneA-${j}-copy-${i}`;
+                                        clone.style.opacity = '0';
+                                        root.current?.appendChild(clone);
+                                        clones.push(clone);
+                                    }
+
+                                    bClones.push(clones);
+                                })
+
+                                phase4 = createTimeline()
+
+                                for (let i = 0; i < 3; i++) {
+                                    // console.log('aclones i', aClones[i])
+                                    aClones[i].forEach((clone, j) => {
+                                        phase4?.add(clone, {
+                                            position: 'absolute',
+                                            y: aWidth/3 + (10*j),
+                                            x: (50*i),
+                                            // x: (_, j: number) => `${(j * (aWidth/3)) + 10}px`,
+                                            opacity: 0,
+                                            delay: 0,
+                                            duration: 0,
+                                        }, 0)
+                                    })
+
+                                    bClones[i].forEach((clone, j) => {
+                                        phase4?.add(clone, {
+                                            position: 'absolute',
+                                            y: aWidth/3 + (10*j),
+                                            x: rootWidth - aWidth + (50*i),
+                                            // x: (_, j: number) => `${(j * (aWidth/3)) + 10}px`,
+                                            opacity: 0,
+                                            delay: 0,
+                                            duration: 0,
+                                        }, 0)
+                                    })
+                                }
+
+                                aClones.forEach((aCloneGroup, i) => {
+                                    aCloneGroup.forEach((aClone, j) => {
+                                        phase4?.add(aClone, {
+                                            y: aWidth + (70*j) - 20,
+                                            x: (150*i) + 20,
+                                            opacity: 1,
+                                            delay: 0,
+                                            duration: 500,
+                                        }, 1500 * i + 500 * j)   
+                                    })
+                                })
+
+
+                                bClones.forEach((aCloneGroup, i) => {
+                                    aCloneGroup.forEach((aClone, j) => {
+                                        phase4?.add(aClone, {
+                                            y: aWidth + (70*i) - 20,
+                                            x: (150*j) + 20 + 60,
+                                            opacity: 1,
+                                            delay: 0,
+                                            duration: 500,
+                                        }, 1500 * i + 500 * j)   
+                                    })
+                                })
+
+                                phase4.play();
+                            })
+
+                        phase3.play();
+                    }, 3000);
 
                     phase2.play();
                 }, 3500)
@@ -156,6 +249,8 @@ export default function Dashboard() {
         return () => {
             timeline.revert();
             phase2?.revert();
+            phase3?.revert();
+            phase4?.revert();
         };
     }, []);
 
