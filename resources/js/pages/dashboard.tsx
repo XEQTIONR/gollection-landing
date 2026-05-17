@@ -21,10 +21,12 @@ export default function Dashboard() {
         let phase4: ReturnType<typeof createTimeline> | null = null;
 
         const rootWidth = root.current?.clientWidth || 0;
+        const rootHeight = root.current?.clientHeight || 0;
         const aWidth = document.getElementById('a')?.clientWidth || 0;
 
         const removeDynamicClones = () => {
             root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove());
+            root.current?.querySelectorAll('[id^="CrossJoin"]').forEach((el) => el.remove());
         };
 
         const resetSourceElements = () => {
@@ -212,6 +214,42 @@ export default function Dashboard() {
                                     bClones.push(clones);
                                 })
 
+
+                                for (let i = 0; i < 9; i++) {
+                                    const input = document.querySelector('#a')!.cloneNode(true) as HTMLElement;
+
+                                    while (input.children.length > 0) {
+                                        input.removeChild(input.children[0]);
+                                    }
+
+                                    input.id = `CrossJoin-${i}`;
+                                    root.current?.appendChild(input);
+                                    input.style.border = '2px dashed oklch(0.5434 0.1855 259.82)';
+                                    input.style.opacity = '0';
+                                    input.style.position = 'absolute';
+                                    input.style.top = '0';
+                                    input.style.left = '-10px';
+                                    input.style.zIndex = '3';
+                                    input.style.width = aWidth*(2/3) + 10 + 'px'
+                                }
+
+                                const outerContainer = document.querySelector('#a')!.cloneNode(true) as HTMLElement
+
+                                while (outerContainer.children.length > 0) {
+                                    outerContainer.removeChild(outerContainer.children[0]);
+                                }
+
+                                outerContainer.id = `Outer-Container`
+                                root.current?.appendChild(outerContainer);
+                                outerContainer.style.border = '5px solid oklch(0.5434 0.1855 259.82)';
+                                outerContainer.style.opacity = '0';
+                                outerContainer.style.position = 'absolute';
+                                outerContainer.style.top = rootHeight * .1 + 'px';
+                                outerContainer.style.left = '0';
+                                outerContainer.style.zIndex = '3';
+                                outerContainer.style.width = aWidth * 2.5 + 'px'
+                                outerContainer.style.height = rootHeight * .8 + 'px'
+
                                 phase4 = createTimeline({
                                     onComplete: scheduleRestart,
                                 });
@@ -223,7 +261,6 @@ export default function Dashboard() {
                                             position: 'absolute',
                                             y: aWidth/3 + (10*j),
                                             x: (50*i),
-                                            // x: (_, j: number) => `${(j * (aWidth/3)) + 10}px`,
                                             opacity: 0,
                                             delay: 0,
                                             duration: 0,
@@ -235,7 +272,6 @@ export default function Dashboard() {
                                             position: 'absolute',
                                             y: aWidth/3 + (10*j),
                                             x: rootWidth - aWidth + (50*i),
-                                            // x: (_, j: number) => `${(j * (aWidth/3)) + 10}px`,
                                             opacity: 0,
                                             delay: 0,
                                             duration: 0,
@@ -245,28 +281,60 @@ export default function Dashboard() {
 
                                 aClones.forEach((aCloneGroup, i) => {
                                     aCloneGroup.forEach((aClone, j) => {
+
                                         phase4?.add(aClone, {
                                             y: aWidth + (70*j) - 20,
                                             x: (150*i) + 20,
                                             opacity: 1,
                                             delay: 0,
                                             duration: 500,
-                                        }, 1500 * i + 500 * j)   
+                                        }, 1500 * i + 500 * j)
+
+                                        const miniContainer = document.getElementById(`CrossJoin-${i*3 + j}`)!
+
+                                        miniContainer.style.left = (150*i) + 10 + 'px';
+                                        miniContainer.style.top = aWidth + (70*j) - 30 + 'px';
+
+                                        phase4?.add(miniContainer, {
+                                            opacity: 1,
+                                            delay: 0,
+                                            duration: 500,
+                                        }, 1500 * i + 500 * j)
+                                        
+                                        phase4?.add(aClone, {
+                                            y: (70*j) + 70,
+                                        }, 4500)
+
+                                        phase4?.add(miniContainer, {
+                                            transform: `translateY(-${aWidth/2}px)`,
+                                        }, 4500)
                                     })
                                 })
 
 
-                                bClones.forEach((aCloneGroup, i) => {
-                                    aCloneGroup.forEach((aClone, j) => {
-                                        phase4?.add(aClone, {
+                                bClones.forEach((bCloneGroup, i) => {
+                                    bCloneGroup.forEach((bClone, j) => {
+                                        phase4?.add(bClone, {
                                             y: aWidth + (70*i) - 20,
                                             x: (150*j) + 20 + 60,
                                             opacity: 1,
                                             delay: 0,
                                             duration: 500,
                                         }, 1500 * i + 500 * j)   
+
+                                        phase4?.add(bClone, {
+                                            y: (70*i) + 70,
+                                        }, 4500)
                                     })
                                 })
+                                
+                                phase4.add('#a,#b', {
+                                    opacity: 0,
+                                }, 4500)
+
+                                phase4.add('#Outer-Container', {
+                                    opacity: 1,
+                                }, 4500)
 
                                 phase4.play();
                             })
