@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
 // import { dashboard } from '@/routes';
 
+const BLUE_COLOR = 'oklch(0.5434 0.1855 259.82)';
+const GRAY_COLOR = 'oklch(0.6268 0 0)';
+const GREEN_COLOR = 'oklch(0.6706 0.1995 146.42)';
+
 export default function Dashboard() {
 
     const root = useRef<HTMLDivElement | null>(null);
@@ -29,8 +33,7 @@ export default function Dashboard() {
 
         console.log('aWidth', aWidth);
         const removeDynamicClones = () => {
-            root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove());
-            root.current?.querySelectorAll('[id^="CrossJoin"]').forEach((el) => el.remove());
+            root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove())
         };
 
         const resetSourceElements = () => {
@@ -75,11 +78,11 @@ export default function Dashboard() {
             cleanup();
 
             phase1 = createTimeline()
-                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
                 .set('#a', { left: 0 }, 0)
                 .set('#b', { left: aWidth*2 }, 0)
                 .set('#funcLabel', { opacity: 0 }, 0)
-                .set('#a div,#b div', { backgroundColor: '#2369d9' }, 0)
+                .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Combine(fields, values)' }, 0)
                 .add('#a', { zIndex: 2, duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
                 .add('#b', { duration: 500, delay: 1000, x: `-${aWidth/2}px`, }, 0)
@@ -90,7 +93,7 @@ export default function Dashboard() {
                 .add('#a div,#b div', {duration: 500, y: (_, i: number) => `${(i%3) * (aWidth/3)}px`, }, 2500)
                 .add('#b', { duration: 500, x: -(aWidth*1.667) }, 3000)
                 .add('#a', { x: 0, duration: 500, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 3000)
-                .set('#b div', {  backgroundColor: '#888' }, 3000)
+                .set('#b div', {  backgroundColor: GRAY_COLOR }, 3000)
                 .call(() => {
                     // Phase 2 must be a separate timeline — timeline.add() on the parent during play calls init() and replays #a/#b.
                     const cloneA = document.getElementById('a')?.cloneNode(true) as HTMLElement;
@@ -171,7 +174,7 @@ export default function Dashboard() {
                         phase3 = createTimeline()
 
                         phase3
-                            .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                            .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
                             .set('#a', { left: 0 }, 0)
                             .set('#b', { left: aWidth*2 }, 0)
                             .set('#a div', { textContent: (_, i: number) => {
@@ -229,9 +232,9 @@ export default function Dashboard() {
                                         input.removeChild(input.children[0]);
                                     }
 
-                                    input.id = `CrossJoin-${i}`;
+                                    input.id = `clone-${i}`;
                                     root.current?.appendChild(input);
-                                    input.style.border = '2px dashed oklch(0.5434 0.1855 259.82)';
+                                    input.style.border = `2px dashed ${BLUE_COLOR}`;
                                     input.style.opacity = '0';
                                     input.style.position = 'absolute';
                                     input.style.top = '0';
@@ -248,7 +251,7 @@ export default function Dashboard() {
 
                                 outerContainer.id = `Outer-Container`
                                 root.current?.appendChild(outerContainer);
-                                outerContainer.style.border = '5px solid oklch(0.5434 0.1855 259.82)';
+                                outerContainer.style.border = `5px solid ${BLUE_COLOR}`;
                                 outerContainer.style.opacity = '0';
                                 outerContainer.style.position = 'absolute';
                                 outerContainer.style.top = rootHeight * .1 + 'px';
@@ -295,7 +298,7 @@ export default function Dashboard() {
                                             duration: 500,
                                         }, 1500 * i + 500 * j)
 
-                                        const miniContainer = document.getElementById(`CrossJoin-${i*3 + j}`)!
+                                        const miniContainer = document.getElementById(`clone-${i*3 + j}`)!
 
                                         miniContainer.style.left = (150*i) + 10 + 'px';
                                         miniContainer.style.top = aWidth + (70*j) - 30 + 'px';
@@ -360,11 +363,11 @@ export default function Dashboard() {
 
                                         phase5 = createTimeline()
                                         phase5
-                                        .set('#a,#b', { top: aWidth/3, borderTopWidth: '5px', borderBottomWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                                        .set('#a,#b', { top: aWidth/3, borderTopWidth: '5px', borderBottomWidth: '5px', borderColor: BLUE_COLOR }, 0)
                                         .set('#a', { left: 0, borderLeftWidth: '5px' }, 0)
                                         .set('#b', { left: aWidth*2 - aWidth - 4, borderRightWidth: '5px' }, 0)
                                         .set('#funcLabel', { opacity: 0 }, 0)
-                                        .set('#a div,#b div', { backgroundColor: '#2369d9' }, 0)
+                                        .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
                                         .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Counts(slice)' }, 0)
                                         .set('#a div', { textContent: (_, i: number) => {
                                             switch (i) {
@@ -417,27 +420,33 @@ export default function Dashboard() {
                                             switch (i) {
                                                 case 0:
                                                     phase5!.add(cClones[0], { duration: 0, textContent: '1' }, AT)
-                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                                 case 1:
                                                     phase5!.add(cClones[1], { duration: 0, textContent: '1' }, AT)
-                                                    phase5!.add(cClones[1], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[1], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[1], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                                 case 2:
                                                     phase5!.add(cClones[2], { duration: 0, textContent: '1' }, AT)
-                                                    phase5!.add(cClones[2], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[2], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[2], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                                 case 3:
                                                     phase5!.add(cClones[2], { duration: 0, textContent: '2' }, AT)
-                                                    phase5!.add(cClones[2], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[2], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[2], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                                 case 4:
                                                     phase5!.add(cClones[0], { duration: 0, textContent: '2' }, AT)
-                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                                 case 5:
                                                     phase5!.add(cClones[0], { duration: 0, textContent: '3', endDelay: 3000 }, AT)
-                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GREEN_COLOR}, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, backgroundColor: GRAY_COLOR}, AT+100)
                                                     break
                                             }
                                         })
@@ -445,7 +454,7 @@ export default function Dashboard() {
                                         phase5.call(() => {
                                             cleanup()
                                             phase6 = createTimeline()
-                                                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                                                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
                                                 
                                                 .set('#a div', { textContent: (_, i: number) => {
                                                     switch (i) {
@@ -470,10 +479,10 @@ export default function Dashboard() {
                                                 .set('#a', { left: 0 }, 0)
                                                 .set('#b', { left: aWidth*2 }, 0)
                                                 .set('#funcLabel', { opacity: 0 }, 0)
-                                                .set('#a div,#b div', { backgroundColor: '#2369d9' }, 0)
+                                                .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
                                                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Diff(slice, otherSlice)' }, 0)
-                                                .add('#b div:nth-child(3)', { backgroundColor: '#00FF00' } , 2000)
-                                                .add('#a div:nth-child(-n + 2)', { backgroundColor: '#888' } , 2000)
+                                                .add('#b div:nth-child(3)', { duration: 0, backgroundColor: GREEN_COLOR } , 2000)
+                                                .add('#a div:nth-child(-n + 2)', { duration: 0, backgroundColor: GRAY_COLOR } , 2000)
                                                 .add('#a div:nth-child(-n + 2)', { opacity: 0 } , 3000)
                                                 .add("#a", { duration: 300, width: aWidth*(1/3) + 12, } , 3500)
                                                 .add('#a div', { duration: 300, x: aWidth*(-2/3) + 4 }, 3500)
@@ -483,10 +492,10 @@ export default function Dashboard() {
                                                     phase7 = createTimeline({onComplete: scheduleRestart})
                                                         .set('#funcLabel', { opacity: 0 }, 0)
                                                         .set('#a,#b', { top: aWidth/3, borderWidth: '5px', position: 'absolute' }, 0)
-                                                        .set('#a', { left: 0, borderColor: 'oklch(0.5434 0.1855 259.82)', zIndex: 2, x: 0, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 0)
+                                                        .set('#a', { left: 0, borderColor: BLUE_COLOR, zIndex: 2, x: 0, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 0)
                                                         .set('#b', { left: aWidth*2, borderColor: 'transparent', zIndex: 1, x: -(aWidth*1.667) }, 0)
                                                         .set('#a div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 0)
-                                                        .set('#b div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: '#888'}, 0)
+                                                        .set('#b div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: GRAY_COLOR}, 0)
                                                         .call(() => {
                                                             const cloneA = document.querySelector('#a')!.cloneNode(true) as HTMLElement
                                                             const cloneB = document.querySelector('#b')!.cloneNode(true) as HTMLElement
@@ -509,7 +518,7 @@ export default function Dashboard() {
                                                                 .set(cloneA, { x: aWidth }, 0)
                                                                 .set(cloneB, { x: aWidth * (-2/3) }, 0)
                                                                 .set('#clone-a div:nth-child(3)', { textContent: 'u' }, 0)
-                                                                .set('#clone-b div', { backgroundColor: '#888', textContent: (_, i:number) => {
+                                                                .set('#clone-b div', { backgroundColor: GRAY_COLOR, textContent: (_, i:number) => {
                                                                     switch (i) {
                                                                         case 0:
                                                                             return '511';
@@ -521,13 +530,13 @@ export default function Dashboard() {
                                                                 } }, 0)
                                                                     
                                                                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, endDelay: 10000, textContent: 'gollection.DiffAssoc(map, otherMap)' }, 0)
-                                                                .add('#a div:nth-child(2)', { backgroundColor: '#009900', duration: 0 }, 2000)
-                                                                .add('#b div:nth-child(2)', { backgroundColor: '#009900', duration: 0 }, 2000)
-                                                                .add('#clone-a div:nth-child(2), #clone-b div:nth-child(2)', { backgroundColor: '#009900' }, 2000)
+                                                                .add('#a div:nth-child(2)', { backgroundColor: GREEN_COLOR, duration: 0 }, 2000)
+                                                                .add('#b div:nth-child(2)', { backgroundColor: GREEN_COLOR, duration: 0 }, 2000)
+                                                                .add('#clone-a div:nth-child(2), #clone-b div:nth-child(2)', { backgroundColor: GREEN_COLOR, duration: 0 }, 2000)
                                                                 .add('#clone-a, #clone-b', { opacity: 0, endDelay: 10000 }, 3000)
                                                                 .add('#a div:nth-child(odd), #b div:nth-child(odd)', { opacity: 0 }, 3000)
-                                                                .add('#a div:nth-child(2)', { backgroundColor: 'oklch(0.5434 0.1855 259.82)', duration: 0 }, 3000)
-                                                                .add('#b div:nth-child(2)', { backgroundColor: '#888', duration: 0 }, 3000)
+                                                                .add('#a div:nth-child(2)', { backgroundColor: BLUE_COLOR, duration: 0 }, 3000)
+                                                                .add('#b div:nth-child(2)', { backgroundColor: GRAY_COLOR, duration: 0 }, 3000)
                                                                 .add('#a div:nth-child(2),#b div:nth-child(2)', { y: 0, duration: 500 }, 3000)
                                                                 .add('#a', { height: aWidth*(1/3) + 15, duration: 500 }, 3000)
                                                             
