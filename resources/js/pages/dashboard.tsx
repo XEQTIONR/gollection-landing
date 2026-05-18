@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { createTimeline, utils } from 'animejs';
+import { createTimeline } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -15,17 +15,19 @@ export default function Dashboard() {
         let cancelled = false;
         let loopTimeout: ReturnType<typeof setTimeout> | undefined;
 
-        let timeline: ReturnType<typeof createTimeline> | null = null;
+        let phase1: ReturnType<typeof createTimeline> | null = null;
         let phase2: ReturnType<typeof createTimeline> | null = null;
         let phase3: ReturnType<typeof createTimeline> | null = null;
         let phase4: ReturnType<typeof createTimeline> | null = null;
         let phase5: ReturnType<typeof createTimeline> | null = null;
         let phase6: ReturnType<typeof createTimeline> | null = null;
+        let phase7: ReturnType<typeof createTimeline> | null = null;
 
         const rootWidth = root.current?.clientWidth || 0;
         const rootHeight = root.current?.clientHeight || 0;
         const aWidth = document.getElementById('a')?.clientWidth || 0;
 
+        console.log('aWidth', aWidth);
         const removeDynamicClones = () => {
             root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove());
             root.current?.querySelectorAll('[id^="CrossJoin"]').forEach((el) => el.remove());
@@ -41,13 +43,14 @@ export default function Dashboard() {
         };
 
         const cleanup = () => {
-            timeline?.revert();
+            phase1?.revert();
             phase2?.revert();
             phase3?.revert();
             phase4?.revert();
             phase5?.revert();
             phase6?.revert();
-            timeline = phase2 = phase3 = phase4 = phase5 = phase6 = null;
+            phase7?.revert();
+            phase1 = phase2 = phase3 = phase4 = phase5 = phase6 = phase7 = null;
             removeDynamicClones();
             resetSourceElements();
         };
@@ -71,7 +74,7 @@ export default function Dashboard() {
 
             cleanup();
 
-            timeline = createTimeline()
+            phase1 = createTimeline()
                 .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
                 .set('#a', { left: 0 }, 0)
                 .set('#b', { left: aWidth*2 }, 0)
@@ -163,7 +166,7 @@ export default function Dashboard() {
                             root.current.removeChild(cloneBEl);
                         }
                         
-                        timeline?.revert()
+                        phase1?.revert()
                         
                         phase3 = createTimeline()
 
@@ -386,7 +389,17 @@ export default function Dashboard() {
                                         
                                         aClones.forEach((aClone, i) => {
                                             phase5!
-                                               .set(aClone, { y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0 }, 0)
+                                               .set(aClone, { y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0, textContent: () => {
+                                                    switch (i) {
+                                                        
+                                                        case 0:
+                                                            return 'joe';
+                                                        case 1:
+                                                            return 'fin';
+                                                        case 2:
+                                                            return 'tim';
+                                                    }
+                                               } }, 0)
                                                .add(aClone, { opacity: 1 }, 1000)
 
 
@@ -423,7 +436,7 @@ export default function Dashboard() {
                                                     phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
                                                     break
                                                 case 5:
-                                                    phase5!.add(cClones[0], { duration: 0, textContent: '3' }, AT)
+                                                    phase5!.add(cClones[0], { duration: 0, textContent: '3', endDelay: 3000 }, AT)
                                                     phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
                                                     break
                                             }
@@ -431,7 +444,7 @@ export default function Dashboard() {
 
                                         phase5.call(() => {
                                             cleanup()
-                                            phase6 = createTimeline({onComplete: scheduleRestart})
+                                            phase6 = createTimeline()
                                                 .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
                                                 
                                                 .set('#a div', { textContent: (_, i: number) => {
@@ -460,29 +473,78 @@ export default function Dashboard() {
                                                 .set('#a div,#b div', { backgroundColor: '#2369d9' }, 0)
                                                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Diff(slice, otherSlice)' }, 0)
                                                 .add('#b div:nth-child(3)', { backgroundColor: '#00FF00' } , 2000)
-                                                .add('#a div:nth-child(1)', { backgroundColor: '#888' } , 2000)
-                                                .add('#a div:nth-child(1)', { opacity: 0 } , 3000)
-                                                .add("#a", { duration: 300, width: aWidth*(2/3) + 8, } , 3500)
-                                                .add('#a div', { duration: 300, x: aWidth*(-1/3) }, 3500)
+                                                .add('#a div:nth-child(-n + 2)', { backgroundColor: '#888' } , 2000)
+                                                .add('#a div:nth-child(-n + 2)', { opacity: 0 } , 3000)
+                                                .add("#a", { duration: 300, width: aWidth*(1/3) + 12, } , 3500)
+                                                .add('#a div', { duration: 300, x: aWidth*(-2/3) + 4 }, 3500)
                                                 .add('#b', {opacity: 0}, 3700)
-                                                
-                                            phase6.play()
-                                        })
-                                        
-                                        phase5.play()
+                                                .call(() => {
+                                                    cleanup()
+                                                    phase7 = createTimeline({onComplete: scheduleRestart})
+                                                        .set('#funcLabel', { opacity: 0 }, 0)
+                                                        .set('#a,#b', { top: aWidth/3, borderWidth: '5px', position: 'absolute' }, 0)
+                                                        .set('#a', { left: 0, borderColor: 'oklch(0.5434 0.1855 259.82)', zIndex: 2, x: 0, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 0)
+                                                        .set('#b', { left: aWidth*2, borderColor: 'transparent', zIndex: 1, x: -(aWidth*1.667) }, 0)
+                                                        .set('#a div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 0)
+                                                        .set('#b div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: '#888'}, 0)
+                                                        .call(() => {
+                                                            const cloneA = document.querySelector('#a')!.cloneNode(true) as HTMLElement
+                                                            const cloneB = document.querySelector('#b')!.cloneNode(true) as HTMLElement
 
+                                                            cloneA.id = 'clone-a'
+                                                            cloneB.id = 'clone-b'
+
+                                                            root.current?.appendChild(cloneA)
+                                                            root.current?.appendChild(cloneB)
+
+                                                            // cloneA.style.opacity = '0'
+                                                            // cloneB.style.opacity = '0'
+                                                            cloneA.style.position = 'absolute'
+                                                            cloneB.style.position = 'absolute'
+
+                                                            cloneA.style.y = `${aWidth/3}px`
+                                                            cloneB.style.y = `${aWidth/3}px`
+
+                                                            phase7!
+                                                                .set(cloneA, { x: aWidth }, 0)
+                                                                .set(cloneB, { x: aWidth * (-2/3) }, 0)
+                                                                .set('#clone-a div:nth-child(3)', { textContent: 'u' }, 0)
+                                                                .set('#clone-b div', { backgroundColor: '#888', textContent: (_, i:number) => {
+                                                                    switch (i) {
+                                                                        case 0:
+                                                                            return '511';
+                                                                        case 1:
+                                                                            return '11';
+                                                                        case 2:
+                                                                            return '6';
+                                                                    }
+                                                                } }, 0)
+                                                                    
+                                                                .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, endDelay: 10000, textContent: 'gollection.DiffAssoc(map, otherMap)' }, 0)
+                                                                .add('#a div:nth-child(2)', { backgroundColor: '#009900', duration: 0 }, 2000)
+                                                                .add('#b div:nth-child(2)', { backgroundColor: '#009900', duration: 0 }, 2000)
+                                                                .add('#clone-a div:nth-child(2), #clone-b div:nth-child(2)', { backgroundColor: '#009900' }, 2000)
+                                                                .add('#clone-a, #clone-b', { opacity: 0, endDelay: 10000 }, 3000)
+                                                                .add('#a div:nth-child(odd), #b div:nth-child(odd)', { opacity: 0 }, 3000)
+                                                                .add('#a div:nth-child(2)', { backgroundColor: 'oklch(0.5434 0.1855 259.82)', duration: 0 }, 3000)
+                                                                .add('#b div:nth-child(2)', { backgroundColor: '#888', duration: 0 }, 3000)
+                                                                .add('#a div:nth-child(2),#b div:nth-child(2)', { y: 0, duration: 500 }, 3000)
+                                                                .add('#a', { height: aWidth*(1/3) + 15, duration: 500 }, 3000)
+                                                            
+                                                        })
+                                                        .play() // phase7.play();
+                                                }, 5000)
+                                                .play() // phase6.play();
+                                        }, 4500)
+                                        .play()  // phase5.play();
                                     }, 6000)
-
-                                phase4.play()
+                                    .play() // phase4.play();
                             })
-
-                        phase3.play();
-                    }, 3000);
-
-                    phase2.play();
-                }, 3500);
-
-            timeline.play();
+                            .play() // phase3.play();
+                    }, 3000)
+                    .play() // phase2.play();
+                }, 3500)
+                .play() // phase1.play();
         };
 
         runSequence();
