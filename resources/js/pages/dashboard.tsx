@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { createTimeline } from 'animejs';
+import { createTimeline, utils } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
@@ -19,6 +19,7 @@ export default function Dashboard() {
         let phase2: ReturnType<typeof createTimeline> | null = null;
         let phase3: ReturnType<typeof createTimeline> | null = null;
         let phase4: ReturnType<typeof createTimeline> | null = null;
+        let phase5: ReturnType<typeof createTimeline> | null = null;
 
         const rootWidth = root.current?.clientWidth || 0;
         const rootHeight = root.current?.clientHeight || 0;
@@ -43,7 +44,8 @@ export default function Dashboard() {
             phase2?.revert();
             phase3?.revert();
             phase4?.revert();
-            timeline = phase2 = phase3 = phase4 = null;
+            phase5?.revert();
+            timeline = phase2 = phase3 = phase4 = phase5 = null;
             removeDynamicClones();
             resetSourceElements();
         };
@@ -179,25 +181,25 @@ export default function Dashboard() {
                             } }, 0)
                             .add('#funcLabel', { y: '-10px', opacity: 1, delay: 0, duration: 1000, textContent: 'gollection.CrossJoin(fields, values)' }, 0)
                             .call(() => {
-                                const aDivs = document.querySelectorAll('#a div');
-                                const bDivs = document.querySelectorAll('#b div');
+                                const aDivs = document.querySelectorAll('#a div')
+                                const bDivs = document.querySelectorAll('#b div')
 
 
-                                const aClones: HTMLElement[][] = [];
-                                const bClones: HTMLElement[][] = [];
+                                const aClones: HTMLElement[][] = []
+                                const bClones: HTMLElement[][] = []
 
                                 aDivs.forEach((aDiv, j) => {
-                                    const clones = [];
+                                    const clones = []
 
                                     for (let i = 0; i < 3; i++) {
-                                        const clone = aDiv.cloneNode(true) as HTMLElement;
-                                        clone.id = `cloneA-${j}-copy-${i}`;
-                                        clone.style.opacity = '0';
-                                        root.current?.appendChild(clone);
-                                        clones.push(clone);
+                                        const clone = aDiv.cloneNode(true) as HTMLElement
+                                        clone.id = `cloneA-${j}-copy-${i}`
+                                        clone.style.opacity = '0'
+                                        root.current?.appendChild(clone)
+                                        clones.push(clone)
                                     }
 
-                                    aClones.push(clones);
+                                    aClones.push(clones)
                                 })
 
                                 bDivs.forEach((bDiv, j) => {
@@ -250,9 +252,7 @@ export default function Dashboard() {
                                 outerContainer.style.width = aWidth * 2.5 + 'px'
                                 outerContainer.style.height = rootHeight * .8 + 'px'
 
-                                phase4 = createTimeline({
-                                    onComplete: scheduleRestart,
-                                });
+                                phase4 = createTimeline();
 
                                 for (let i = 0; i < 3; i++) {
                                     // console.log('aclones i', aClones[i])
@@ -328,15 +328,142 @@ export default function Dashboard() {
                                     })
                                 })
                                 
-                                phase4.add('#a,#b', {
-                                    opacity: 0,
-                                }, 4500)
+                                phase4
+                                    .add('#a,#b', { opacity: 0 }, 4500)
+                                    .add('#Outer-Container', { opacity: 1 }, 4500)
+                                    .call(() => {
+                                        cleanup()
 
-                                phase4.add('#Outer-Container', {
-                                    opacity: 1,
-                                }, 4500)
+                                        
+                                        const aClones: HTMLElement[] = []
+                                        const cClones: HTMLElement[] = []
 
-                                phase4.play();
+                                        aDivs.forEach((aDiv, j) => {
+                    
+                                            const aclone = aDiv.cloneNode(true) as HTMLElement
+                                            const cclone = aDiv.cloneNode(true) as HTMLElement
+                                            aclone.id = `clone-${j}`
+                                            cclone.id = `clone-${j}-c`
+                                            cclone.innerHTML = '0'
+                                            //clone.style.opacity = '0'
+                                            root.current?.appendChild(aclone)
+                                            root.current?.appendChild(cclone)
+
+                                            aClones.push(aclone)
+                                            cClones.push(cclone)
+                                        })
+
+                                        phase5 = createTimeline({onComplete: scheduleRestart,})
+                                        phase5
+                                        .set('#a,#b', { top: aWidth/3, borderTopWidth: '5px', borderBottomWidth: '5px', borderColor: 'oklch(0.5434 0.1855 259.82)' }, 0)
+                                        .set('#a', { left: 0, borderLeftWidth: '5px' }, 0)
+                                        .set('#b', { left: aWidth*2 - aWidth - 4, borderRightWidth: '5px' }, 0)
+                                        .set('#funcLabel', { opacity: 0 }, 0)
+                                        .set('#a div,#b div', { backgroundColor: '#2369d9' }, 0)
+                                        .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Counts(slice)' }, 0)
+                                        .set('#a div', { textContent: (_, i: number) => {
+                                            switch (i) {
+                                                case 0:
+                                                    return 'joe';
+                                                case 1:
+                                                    return 'fin';
+                                                case 2:
+                                                    return 'tim';
+                                            }
+                                        } }, 0)
+                                        .set('#b div', { textContent: (_, i: number) => {
+                                            switch (i) {
+                                                case 0:
+                                                    return 'tim';
+                                                case 1:
+                                                    return 'joe';
+                                                case 2:
+                                                    return 'joe';
+                                            }
+                                        } }, 0)
+                                        
+                                        aClones.forEach((aClone, i) => {
+                                            phase5!
+                                               .set(aClone, { y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0 }, 0)
+                                               .add(aClone, { opacity: 1 }, 1000)
+
+
+                                               .set(cClones[i], { x: 55, y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0, }, 0)
+                                               .add(cClones[i], { opacity: 1 }, 2000)
+                                        })
+
+
+                                        const allDivs = document.querySelectorAll('#a div, #b div')
+
+                                        console.log({cClones})
+                                        allDivs.forEach((aDiv, i) => {
+                                            const AT = 2000 + (250*i)
+                                            phase5!.add(aDiv, { scale: [1, 1.5, 1], duration: 250 }, AT)
+
+
+                                            switch (i) {
+                                                case 0:
+                                                    phase5!.add(cClones[0], { duration: 0, textContent: '1' }, AT)
+                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                                case 1:
+                                                    phase5!.add(cClones[1], { duration: 0, textContent: '1' }, AT)
+                                                    phase5!.add(cClones[1], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                                case 2:
+                                                    phase5!.add(cClones[2], { duration: 0, textContent: '1' }, AT)
+                                                    phase5!.add(cClones[2], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                                case 3:
+                                                    phase5!.add(cClones[2], { duration: 0, textContent: '2' }, AT)
+                                                    phase5!.add(cClones[2], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                                case 4:
+                                                    phase5!.add(cClones[0], { duration: 0, textContent: '2' }, AT)
+                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                                case 5:
+                                                    phase5!.add(cClones[0], { duration: 0, textContent: '3' }, AT)
+                                                    phase5!.add(cClones[0], { duration: 200, backgroundColor: ['#00FF00', '#AAA']}, AT)
+                                                    break
+                                            }
+                                            // if (i < 3)  {
+                                            //     console.log(utils.get(cClones[i], 'innerHTML'))
+
+                                            //     phase5!.add(
+                                            //         cClones[i], 
+                                            //         { 
+                                            //             duration: 0,
+                                            //             textContent: '' + (parseInt(utils.get(cClones[i], 'textContent')) + 1) 
+                                            //         }, 2000 + (250*i)
+                                            //     )
+                                            // }
+                                        })
+
+                                        // ([...aClones, ...cClones]).forEach((clone, i) => {
+                                        //     phase5!.add(clone, { opacity: 0 }, 3000)
+                                        // })
+
+
+
+                                        
+                                        
+                                        // .add('#a', { zIndex: 2, duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
+                                        // .add('#b', { duration: 500, delay: 1000, x: `-${aWidth/2}px`, }, 0)
+                                        // .add('#a div', { duration: 500, y: (_, i: number) => `${((aWidth/3) * (i+1)) + 10}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 1500)
+                                        // .add('#b div', { duration: 500, y: (_, i: number) => `${((aWidth/3) * (i+1)) + 10}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, }, 1500)
+                                        // .add('#b', { duration: 500, x: `-${aWidth * 1.17}px`, borderColor: 'rgba(0, 0, 0, 0)' }, 2000)
+                                        // .add('#b', { duration: 500, x: `-${aWidth * 1.17}px` }, 2500)
+                                        // .add('#a div,#b div', {duration: 500, y: (_, i: number) => `${(i%3) * (aWidth/3)}px`, }, 2500)
+                                        // .add('#b', { duration: 500, x: -(aWidth*1.667) }, 3000)
+                                        // .add('#a', { x: 0, duration: 500, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 3000)
+                                        // .set('#b div', {  backgroundColor: '#888' }, 3000)
+                                        
+                                        phase5.play()
+
+                                    }, 6000)
+
+                                phase4.play()
                             })
 
                         phase3.play();
