@@ -3,11 +3,12 @@ import { createTimeline } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
-// import { dashboard } from '@/routes';
 
 const BLUE_COLOR = 'oklch(0.5434 0.1855 259.82)';
 const GRAY_COLOR = 'oklch(0.6268 0 0)';
 const GREEN_COLOR = 'oklch(0.6706 0.1995 146.42)';
+
+const PADDING = 10;
 
 export default function Dashboard() {
 
@@ -28,10 +29,9 @@ export default function Dashboard() {
         let phase7: ReturnType<typeof createTimeline> | null = null;
 
         const rootWidth = root.current?.clientWidth || 0;
-        const rootHeight = root.current?.clientHeight || 0;
         const aWidth = document.getElementById('a')?.clientWidth || 0;
+        const itemWidth = document.querySelector('#a div')?.clientWidth || 0;
 
-        console.log('aWidth', aWidth);
         const removeDynamicClones = () => {
             root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove())
         };
@@ -95,7 +95,7 @@ export default function Dashboard() {
                 .add('#a', { x: 0, duration: 500, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 3000)
                 .set('#b div', {  backgroundColor: GRAY_COLOR }, 3000)
                 .call(() => {
-                    // Phase 2 must be a separate timeline — timeline.add() on the parent during play calls init() and replays #a/#b.
+
                     const cloneA = document.getElementById('a')?.cloneNode(true) as HTMLElement;
                     const cloneB = document.getElementById('b')?.cloneNode(true) as HTMLElement;
 
@@ -254,20 +254,19 @@ export default function Dashboard() {
                                 outerContainer.style.border = `5px solid ${BLUE_COLOR}`;
                                 outerContainer.style.opacity = '0';
                                 outerContainer.style.position = 'absolute';
-                                outerContainer.style.top = rootHeight * .1 + 'px';
+                                outerContainer.style.top = itemWidth + 'px';
                                 outerContainer.style.left = '0';
                                 outerContainer.style.zIndex = '3';
-                                outerContainer.style.width = aWidth * 2.5 + 'px'
-                                outerContainer.style.height = rootHeight * .8 + 'px'
+                                outerContainer.style.width = aWidth * 3 + 'px'
+                                outerContainer.style.height = (itemWidth * 3) + (12 * PADDING) + 'px'
 
                                 phase4 = createTimeline();
 
                                 for (let i = 0; i < 3; i++) {
-                                    // console.log('aclones i', aClones[i])
                                     aClones[i].forEach((clone, j) => {
                                         phase4?.add(clone, {
                                             position: 'absolute',
-                                            y: aWidth/3 + (10*j),
+                                            y: aWidth/3 + (PADDING*j),
                                             x: (50*i),
                                             opacity: 0,
                                             delay: 0,
@@ -278,7 +277,7 @@ export default function Dashboard() {
                                     bClones[i].forEach((clone, j) => {
                                         phase4?.add(clone, {
                                             position: 'absolute',
-                                            y: aWidth/3 + (10*j),
+                                            y: aWidth/3 + (PADDING*j),
                                             x: rootWidth - aWidth + (50*i),
                                             opacity: 0,
                                             delay: 0,
@@ -291,8 +290,8 @@ export default function Dashboard() {
                                     aCloneGroup.forEach((aClone, j) => {
 
                                         phase4?.add(aClone, {
-                                            y: aWidth + (70*j) - 20,
-                                            x: (150*i) + 20,
+                                            y: aWidth + (70*j) - PADDING,
+                                            x: (4 * i * itemWidth) + 20,
                                             opacity: 1,
                                             delay: 0,
                                             duration: 500,
@@ -300,8 +299,8 @@ export default function Dashboard() {
 
                                         const miniContainer = document.getElementById(`clone-${i*3 + j}`)!
 
-                                        miniContainer.style.left = (150*i) + 10 + 'px';
-                                        miniContainer.style.top = aWidth + (70*j) - 30 + 'px';
+                                        miniContainer.style.left = (4 * i * itemWidth)+ PADDING + 'px';
+                                        miniContainer.style.top = aWidth + (70*j) - 30 + itemWidth/4 + 'px';
 
                                         phase4?.add(miniContainer, {
                                             opacity: 1,
@@ -310,11 +309,11 @@ export default function Dashboard() {
                                         }, 1500 * i + 500 * j)
                                         
                                         phase4?.add(aClone, {
-                                            y: (70*j) + 70,
+                                            y: (70*j) + aWidth/3 + itemWidth/2.5,
                                         }, 4500)
 
                                         phase4?.add(miniContainer, {
-                                            transform: `translateY(-${aWidth/2}px)`,
+                                            transform: `translateY(-${(aWidth/2)}px)`,
                                         }, 4500)
                                     })
                                 })
@@ -323,15 +322,15 @@ export default function Dashboard() {
                                 bClones.forEach((bCloneGroup, i) => {
                                     bCloneGroup.forEach((bClone, j) => {
                                         phase4?.add(bClone, {
-                                            y: aWidth + (70*i) - 20,
-                                            x: (150*j) + 20 + 60,
+                                            y: aWidth + (70*i) - PADDING,
+                                            x: (4 * j * itemWidth) + 20 + (itemWidth + PADDING),
                                             opacity: 1,
                                             delay: 0,
                                             duration: 500,
                                         }, 1500 * i + 500 * j)   
 
                                         phase4?.add(bClone, {
-                                            y: (70*i) + 70,
+                                            y: (70*i) + aWidth/3 + itemWidth/2.5,
                                         }, 4500)
                                     })
                                 })
@@ -363,12 +362,12 @@ export default function Dashboard() {
 
                                         phase5 = createTimeline()
                                         phase5
-                                        .set('#a,#b', { top: aWidth/3, borderTopWidth: '5px', borderBottomWidth: '5px', borderColor: BLUE_COLOR }, 0)
+                                        .set('#a,#b', { top: aWidth/3, borderTopWidth: 5, borderBottomWidth: 5, borderColor: BLUE_COLOR }, 0)
                                         .set('#a', { left: 0, borderLeftWidth: '5px' }, 0)
-                                        .set('#b', { left: aWidth*2 - aWidth - 4, borderRightWidth: '5px' }, 0)
+                                        .set('#b', { left: aWidth*2 - aWidth - 4, borderRightWidth: 5, }, 0)
                                         .set('#funcLabel', { opacity: 0 }, 0)
                                         .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
-                                        .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Counts(slice)' }, 0)
+                                        .add('#funcLabel', { y: -10, opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Counts(slice)' }, 0)
                                         .set('#a div', { textContent: (_, i: number) => {
                                             switch (i) {
                                                 case 0:
@@ -392,7 +391,7 @@ export default function Dashboard() {
                                         
                                         aClones.forEach((aClone, i) => {
                                             phase5!
-                                               .set(aClone, { y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0, textContent: () => {
+                                               .set(aClone, { y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, textContent: () => {
                                                     switch (i) {
                                                         
                                                         case 0:
@@ -406,7 +405,7 @@ export default function Dashboard() {
                                                .add(aClone, { opacity: 1 }, 1000)
 
 
-                                               .set(cClones[i], { x: 55, y: aWidth + (55*i), duration: 200, position: 'absolute', opacity: 0, }, 0)
+                                               .set(cClones[i], { x: itemWidth + PADDING, y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, }, 0)
                                                .add(cClones[i], { opacity: 1 }, 2000)
                                         })
 
@@ -570,7 +569,7 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl py-4 px-6">
                 <div className="relative">
-                    <div ref={root} className="h-80 w-full md:w-3/5 xl:w-2/5 absolute top-20 md:top-30 lg:top-40 right-0 z-10 border-2 border-dashed">
+                    <div ref={root} className=" max-h-[33vh] h-80 w-full md:w-3/5 xl:w-2/5 absolute top-10 md:top-30 lg:top-40 right-0 z-10 border-2 border-dashed">
                         <span className="absolute top-0 left-0 font-mono text-xs md:text-base text-muted-foreground border py-2 px-4 rounded-md" ref={funcLabel} id="funcLabel"></span>
                         <Collection id="a" items={['id','age','n']} />
                         <Collection id="b" items={[511,21,6]} />
