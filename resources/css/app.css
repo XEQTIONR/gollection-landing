@@ -8,6 +8,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+
+    
     
     --font-brand: 'Jost','Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
@@ -37,7 +39,7 @@
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
 
-    --color-primary: var(--primary);
+    --color-primary: oklch(0.6206 0.2121 270);
     --color-primary-foreground: var(--primary-foreground);
 
     --color-secondary: var(--secondary);

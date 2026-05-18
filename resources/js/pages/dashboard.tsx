@@ -6,9 +6,11 @@ import { docs } from '@/routes';
 import { useDebouncedCallback } from 'use-debounce';
 import { useState } from 'react';
 
-const BLUE_COLOR = 'oklch(0.5393 0.1873 311.24)';
-const GRAY_COLOR = 'oklch(0.6268 0 0)';
-const GREEN_COLOR = 'oklch(0.6706 0.1995 146.42)';
+const BLUE_COLOR = 'oklch(0.6206 0.2121 270)';
+const BLUE_COLOR_OPACITY = 'oklch(0.6206 0.2121 270 / 0.20)';
+const GRAY_COLOR = 'oklch(0.7467 0 0)';
+const GREEN_COLOR = 'oklch(0.7 0.1751 163.06)';
+const TRANSPARENT_COLOR = 'oklch(0 0 0 / 0%)';
 
 const PADDING = 10;
 
@@ -95,17 +97,17 @@ export default function Dashboard() {
             cleanup();
 
             phase1 = createTimeline()
-                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR, }, 0)
-                .set('#a', { left: 0 }, 0)
-                .set('#b', { left: aWidth*2 }, 0)
+                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR, backgroundColor: BLUE_COLOR_OPACITY, opacity: 1 }, 0)
+                .set('#a', { left: 0, zIndex: 2 }, 0)
+                .set('#b', { left: aWidth*2, zIndex: 2 }, 0)
                 .set('#funcLabel', { opacity: 0 }, 0)
                 .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Combine(fields, values)' }, 0)
-                .add('#a', { zIndex: 2, duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
+                .add('#a', { duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
                 .add('#b', { duration: 500, delay: 1000, x: `-${aWidth/2}px`, }, 0)
                 .add('#a div', { duration: 500, y: (_, i: number) => `${((aWidth/3) * (i+1)) + 10}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 1500)
                 .add('#b div', { duration: 500, y: (_, i: number) => `${((aWidth/3) * (i+1)) + 10}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, }, 1500)
-                .add('#b', { duration: 500, x: `-${aWidth * 1.17}px`, borderColor: 'rgba(0, 0, 0, 0)' }, 2000)
+                .add('#b', { duration: 500, x: `-${aWidth * 1.17}px`, borderColor: TRANSPARENT_COLOR, backgroundColor: TRANSPARENT_COLOR }, 2000)
                 .add('#b', { duration: 500, x: `-${aWidth * 1.17}px` }, 2500)
                 .add('#a div,#b div', {duration: 500, y: (_, i: number) => `${(i%3) * (aWidth/3)}px`, }, 2500)
                 .add('#b', { duration: 500, x: -(aWidth*1.667) }, 3000)
@@ -122,10 +124,12 @@ export default function Dashboard() {
 
                     cloneA.id = 'cloneA';
                     cloneB.id = 'cloneB';
-                    root.current?.appendChild(cloneA);
-                    root.current?.appendChild(cloneB);
+                    cloneA.style.opacity = '0';
+                    cloneB.style.opacity = '0';
                     cloneA.style.zIndex = '-1';
                     cloneB.style.zIndex = '-1';
+                    root.current?.appendChild(cloneA);
+                    root.current?.appendChild(cloneB);
 
                     if (cloneA.children[2]) {
                         cloneA.removeChild(cloneA.children[2]);
@@ -144,7 +148,9 @@ export default function Dashboard() {
 
                     phase2 = createTimeline()
                         .add(cloneA, {
-                            zIndex: { to: 1, duration: 0, delay: 700 },
+                            backgroundColor: { to: TRANSPARENT_COLOR, duration: 0, delay: 1500 },
+                            opacity: { to: 1, duration: 0, delay: 700 },
+                            zIndex: { to: 2, duration: 0, delay: 700 },
                             height: [
                                 { to: cloneHeight, duration: 0, delay: 700 },
                                 { to: cloneHeight / 2, duration: 0, delay: 1000 },
@@ -156,7 +162,8 @@ export default function Dashboard() {
                             ],
                         }, 600)
                         .add(cloneB, {
-                            zIndex: { to: 0, duration: 0, delay: 700 },
+                            opacity: { to: 1, duration: 0, delay: 700 },
+                            zIndex: { to: 2, duration: 0, delay: 700 },
                             height: [
                                 { to: cloneHeight, duration: 0, delay: 700 },
                                 { to: cloneHeight / 2, duration: 0, delay: 1000 },
@@ -191,7 +198,7 @@ export default function Dashboard() {
                         phase3 = createTimeline()
 
                         phase3
-                            .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
+                            .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR, backgroundColor: BLUE_COLOR_OPACITY, }, 0)
                             .set('#a', { left: 0 }, 0)
                             .set('#b', { left: aWidth*2 }, 0)
                             .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
@@ -257,7 +264,7 @@ export default function Dashboard() {
                                     input.style.position = 'absolute';
                                     input.style.top = '0';
                                     input.style.left = '-10px';
-                                    input.style.zIndex = '3';
+                                    input.style.zIndex = '5';
                                     input.style.width = aWidth*(2/3) + 10 + 'px'
                                 }
 
@@ -289,6 +296,7 @@ export default function Dashboard() {
                                             opacity: 0,
                                             delay: 0,
                                             duration: 0,
+                                            zIndex: 10
                                         }, 0)
                                     })
 
@@ -300,6 +308,7 @@ export default function Dashboard() {
                                             opacity: 0,
                                             delay: 0,
                                             duration: 0,
+                                            zIndex: 10
                                         }, 0)
                                     })
                                 }
@@ -322,6 +331,7 @@ export default function Dashboard() {
 
                                         phase4?.add(miniContainer, {
                                             opacity: 1,
+                                            zIndex: 1,
                                             delay: 0,
                                             duration: 500,
                                         }, 1500 * i + 500 * j)
@@ -354,7 +364,7 @@ export default function Dashboard() {
                                 })
                                 
                                 phase4
-                                    .add('#a,#b', { opacity: 0 }, 4500)
+                                    .add('#a,#b', { opacity: 0, backgroundColor: BLUE_COLOR_OPACITY }, 4500)
                                     .add('#clone-Container', { opacity: 1 }, 4500)
                                     .call(() => {
                                         cleanup()
@@ -510,7 +520,7 @@ export default function Dashboard() {
                                                         .set('#funcLabel', { opacity: 0 }, 0)
                                                         .set('#a,#b', { top: aWidth/3, borderWidth: '5px', position: 'absolute' }, 0)
                                                         .set('#a', { left: 0, borderColor: BLUE_COLOR, zIndex: 2, x: 0, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 0)
-                                                        .set('#b', { left: aWidth*2, borderColor: 'transparent', zIndex: 1, x: -(aWidth*1.667) }, 0)
+                                                        .set('#b', { left: aWidth*2, borderColor: TRANSPARENT_COLOR, backgroundColor: TRANSPARENT_COLOR, zIndex: 3, x: -(aWidth*1.667) }, 0)
                                                         .set('#a div', { opacity: 1, y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: BLUE_COLOR}, 0)
                                                         .set('#b div', { opacity: 1, y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: GRAY_COLOR}, 0)
                                                         .call(() => {
@@ -533,10 +543,10 @@ export default function Dashboard() {
 
                                                             phase7!
                                                                 .set(cloneA, { x: aWidth }, 0)
-                                                                .set(cloneB, { x: aWidth * (-2/3) }, 0)
+                                                                .set(cloneB, { x: aWidth * (-2/3), zIndex: 3, borderColor: TRANSPARENT_COLOR }, 0)
                                                                 .set('#clone-a div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                                                                 .set('#clone-a div:nth-child(3)', { textContent: 'u' }, 0)
-                                                                .set('#clone-b div', { backgroundColor: GRAY_COLOR, opacity: 1, textContent: (_, i:number) => {
+                                                                .set('#clone-b div', { zIndex: 3, backgroundColor: GRAY_COLOR, opacity: 1, textContent: (_, i:number) => {
                                                                     switch (i) {
                                                                         case 0:
                                                                             return '511';
@@ -588,21 +598,21 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl py-4 px-6">
                 <div className="relative">
-                    <div ref={root} className=" max-h-[33vh] h-80 w-full md:w-1/2 xl:w-2/5 absolute top-10 md:top-30 lg:top-40 right-0 md:right-10 lg:right-0 z-10">
+                    <div ref={root} className=" max-h-[33vh] h-80 w-full md:w-2/3 xl:w-2/5 absolute top-10 md:top-30 lg:top-40 right-0 md:right-10 lg:right-0 z-10">
                         <span className="absolute top-0 left-0 font-mono text-xs md:text-base text-muted-foreground border py-2 px-4 rounded-md" ref={funcLabel} id="funcLabel"></span>
                         <Collection id="a" items={['id','age','n']} />
                         <Collection id="b" items={[511,21,6]} />
                     </div>
                     <h1 className="text-4xl lg:text-7xl font-semibold uppercase mt-[35vh] md:mt-[30vh] tracking-wide font-brand z-50 relative">
                         Gollection
-                        <span className="text-base ml-3 lowercase">v1.0</span>
+                        <span className="text-base  ml-3 lowercase">v1.0</span>
                     </h1>
                     <p className="text-lg lg:text-xl text-muted-foreground lg:ml-2 md:max-w-[50vw] z-50 relative">
                        A simple Golang library that provides convenient helpers to work with collections of data.
                     </p>
                     <div className="flex gap-4.5 mt-6 z-50 relative">
-                       <Button className="cursor-pointer" onClick={() => router.visit(docs())} size="lg">Read the Docs</Button>
-                       <Button className="cursor-pointer" onClick={() => window.location.href = 'https://github.com/xeqtionr/gollection'} variant="outline" size="lg">View on GitHub</Button>
+                       <Button className="border-2 border-transparent cursor-pointer font-semibold text-white transition-colors duration-300" onClick={() => router.visit(docs())} size="lg">Read the Docs</Button>
+                       <Button className="border-2 cursor-pointer hover:border-primary font-semibold hover:text-primary dark:hover:text-white hover:bg-transparent transition-colors duration-300" onClick={() => window.location.href = 'https://github.com/xeqtionr/gollection'} variant="outline" size="lg">View on GitHub</Button>
                     </div>
                 </div>
             </div>
@@ -617,9 +627,9 @@ function Collection({ id, items }: { id: string, items: any[] }) {
             className="rounded absolute flex items-baseline p-2 gap-2 overflow-visible h-13 md:h-16 lg:h-18"
         >
             {
-                items.map(i => (
-                    <div style={{ opacity: 0 }} className="size-7 md:size-10 lg:size-12 rounded bg-[#2369d9] flex  items-center justify-center shrink-0">
-                        <h6 className="text-white text-sm font-medium text-center">{i}</h6>
+                items.map(item => (
+                    <div style={{ opacity: 0 }} className="size-7 md:size-10 lg:size-12 rounded bg-[#2369d9] flex text-white  items-center justify-center shrink-0 text-sm font-medium text-center">
+                        {item}
                     </div>
                 ))
             }

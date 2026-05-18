@@ -14,7 +14,7 @@ export default function AppLogo() {
             <div className="grid flex-1 text-left text-sm">
                 <span className="mb-0.5 truncate  font-medium font-brand uppercase text-xl tracking-widest">
                     Gollection
-                    {isDocs && <span className="text-xs font-semibold tracking-wider text-center font-mono relative -top-0.75 ml-3 py-0.5 pl-0.75 pr-0.5 bg-foreground text-background rounded lowercase">Docs</span>}
+                    {isDocs && <span className="text-xs font-semibold tracking-wider text-center font-mono relative -top-0.75 ml-3 py-0.5 pl-0.75 pr-0.5 bg-primary text-white rounded lowercase">Docs</span>}
                 </span>
             </div>
         </>

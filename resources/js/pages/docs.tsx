@@ -66,7 +66,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                 After that you can start using gollection functions.
                             </p>
                             <h3 className="font-semibold text-lg ml-0.5 mb-2">Get the package</h3>
-                            <div className="bg-neutral-900 p-4 rounded-lg text-sm mb-4 overflow-x-scroll">
+                            <div className="bg-neutral-900 p-4 rounded-lg text-sm mb-4 overflow-x-scroll text-neutral-50">
                                 
                                 <pre>
                                     <code className='language-go'>
@@ -75,7 +75,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                 </pre>
                             </div>
                             <h3 className="font-semibold text-lg ml-0.5 mb-2">Import it into your code</h3>
-                            <div className="bg-neutral-900 p-4 rounded-lg text-sm mb-4 overflow-x-scroll">
+                            <div className="bg-neutral-900 p-4 rounded-lg text-sm mb-4 overflow-x-scroll text-neutral-50">
                                 
                                 <pre>
                                     <code className='language-go'>
@@ -85,7 +85,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                             </div>
                             <h3 className="font-semibold text-lg ml-0.5 mb-2">You're ready to go!</h3>
                             <p className="mb-3">You can now start using gollection functions on your slices and maps.</p>
-                            <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll">
+                            <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll text-neutral-50">
                                 
                                 <pre>
                                     <code className='language-go'>
@@ -110,7 +110,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                         <a href={`#${method.name}`}><h2 className="font-semibold text-lg ml-0.5 hover:underline">{method.name}</h2></a>
                                         <p className="mt-2 mb-4 ml-1 font-sans2">{method.description}</p>
                                         {method.code && (
-                                            <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll">
+                                            <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll text-neutral-50">
                                                 <pre><code className='language-go'>{method.code}</code></pre>
                                             </div>
                                         )}
