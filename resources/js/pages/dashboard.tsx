@@ -3,8 +3,10 @@ import { createTimeline } from 'animejs';
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { docs } from '@/routes';
+import { useDebouncedCallback } from 'use-debounce';
+import { useState } from 'react';
 
-const BLUE_COLOR = 'oklch(0.5434 0.1855 259.82)';
+const BLUE_COLOR = 'oklch(0.5393 0.1873 311.24)';
 const GRAY_COLOR = 'oklch(0.6268 0 0)';
 const GREEN_COLOR = 'oklch(0.6706 0.1995 146.42)';
 
@@ -12,8 +14,23 @@ const PADDING = 10;
 
 export default function Dashboard() {
 
-    const root = useRef<HTMLDivElement | null>(null);
-    const funcLabel = useRef<HTMLSpanElement | null>(null);
+    const root = useRef<HTMLDivElement | null>(null)
+    const funcLabel = useRef<HTMLSpanElement | null>(null)
+    const [viewportWidth, setViewportWidth] = useState(0)
+
+    const onResizeViewport = () => {
+        console.log('resize', window.innerWidth)
+        setViewportWidth(window.innerWidth)
+    }
+    const debouncedFunc = useDebouncedCallback(onResizeViewport, 100)
+
+    useEffect(() => {
+        window.addEventListener('resize', debouncedFunc)
+        
+        return () => {
+            window.removeEventListener('resize', debouncedFunc)
+        }
+    }, [debouncedFunc])
 
     useEffect(() => {
         const LOOP_DELAY = 1000;
@@ -78,11 +95,11 @@ export default function Dashboard() {
             cleanup();
 
             phase1 = createTimeline()
-                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
+                .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR, }, 0)
                 .set('#a', { left: 0 }, 0)
                 .set('#b', { left: aWidth*2 }, 0)
                 .set('#funcLabel', { opacity: 0 }, 0)
-                .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
+                .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Combine(fields, values)' }, 0)
                 .add('#a', { zIndex: 2, duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
                 .add('#b', { duration: 500, delay: 1000, x: `-${aWidth/2}px`, }, 0)
@@ -177,6 +194,7 @@ export default function Dashboard() {
                             .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR }, 0)
                             .set('#a', { left: 0 }, 0)
                             .set('#b', { left: aWidth*2 }, 0)
+                            .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                             .set('#a div', { textContent: (_, i: number) => {
                                 switch (i) {
                                     case 0:
@@ -249,7 +267,7 @@ export default function Dashboard() {
                                     outerContainer.removeChild(outerContainer.children[0]);
                                 }
 
-                                outerContainer.id = `Outer-Container`
+                                outerContainer.id = `clone-Container`
                                 root.current?.appendChild(outerContainer);
                                 outerContainer.style.border = `5px solid ${BLUE_COLOR}`;
                                 outerContainer.style.opacity = '0';
@@ -337,7 +355,7 @@ export default function Dashboard() {
                                 
                                 phase4
                                     .add('#a,#b', { opacity: 0 }, 4500)
-                                    .add('#Outer-Container', { opacity: 1 }, 4500)
+                                    .add('#clone-Container', { opacity: 1 }, 4500)
                                     .call(() => {
                                         cleanup()
 
@@ -366,7 +384,7 @@ export default function Dashboard() {
                                         .set('#a', { left: 0, borderLeftWidth: '5px' }, 0)
                                         .set('#b', { left: aWidth*2 - aWidth - 4, borderRightWidth: 5, }, 0)
                                         .set('#funcLabel', { opacity: 0 }, 0)
-                                        .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
+                                        .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                                         .add('#funcLabel', { y: -10, opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Counts(slice)' }, 0)
                                         .set('#a div', { textContent: (_, i: number) => {
                                             switch (i) {
@@ -391,7 +409,7 @@ export default function Dashboard() {
                                         
                                         aClones.forEach((aClone, i) => {
                                             phase5!
-                                               .set(aClone, { y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, textContent: () => {
+                                               .set(aClone, { backgroundColor: BLUE_COLOR, y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, textContent: () => {
                                                     switch (i) {
                                                         
                                                         case 0:
@@ -405,7 +423,7 @@ export default function Dashboard() {
                                                .add(aClone, { opacity: 1 }, 1000)
 
 
-                                               .set(cClones[i], { x: itemWidth + PADDING, y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, }, 0)
+                                               .set(cClones[i], { backgroundColor: BLUE_COLOR, x: itemWidth + PADDING, y: aWidth + ((itemWidth + PADDING)*i), duration: 200, position: 'absolute', opacity: 0, }, 0)
                                                .add(cClones[i], { opacity: 1 }, 2000)
                                         })
 
@@ -478,7 +496,7 @@ export default function Dashboard() {
                                                 .set('#a', { left: 0 }, 0)
                                                 .set('#b', { left: aWidth*2 }, 0)
                                                 .set('#funcLabel', { opacity: 0 }, 0)
-                                                .set('#a div,#b div', { backgroundColor: BLUE_COLOR }, 0)
+                                                .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                                                 .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Diff(slice, otherSlice)' }, 0)
                                                 .add('#b div:nth-child(3)', { duration: 0, backgroundColor: GREEN_COLOR } , 2000)
                                                 .add('#a div:nth-child(-n + 2)', { duration: 0, backgroundColor: GRAY_COLOR } , 2000)
@@ -493,8 +511,8 @@ export default function Dashboard() {
                                                         .set('#a,#b', { top: aWidth/3, borderWidth: '5px', position: 'absolute' }, 0)
                                                         .set('#a', { left: 0, borderColor: BLUE_COLOR, zIndex: 2, x: 0, height: `${aWidth + 15}px`, width: `${aWidth * (2/3) + 15}px` }, 0)
                                                         .set('#b', { left: aWidth*2, borderColor: 'transparent', zIndex: 1, x: -(aWidth*1.667) }, 0)
-                                                        .set('#a div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 0)
-                                                        .set('#b div', { y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: GRAY_COLOR}, 0)
+                                                        .set('#a div', { opacity: 1, y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: BLUE_COLOR}, 0)
+                                                        .set('#b div', { opacity: 1, y: (_, i: number) => `${((aWidth/3) * (i))}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`, backgroundColor: GRAY_COLOR}, 0)
                                                         .call(() => {
                                                             const cloneA = document.querySelector('#a')!.cloneNode(true) as HTMLElement
                                                             const cloneB = document.querySelector('#b')!.cloneNode(true) as HTMLElement
@@ -516,8 +534,9 @@ export default function Dashboard() {
                                                             phase7!
                                                                 .set(cloneA, { x: aWidth }, 0)
                                                                 .set(cloneB, { x: aWidth * (-2/3) }, 0)
+                                                                .set('#clone-a div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
                                                                 .set('#clone-a div:nth-child(3)', { textContent: 'u' }, 0)
-                                                                .set('#clone-b div', { backgroundColor: GRAY_COLOR, textContent: (_, i:number) => {
+                                                                .set('#clone-b div', { backgroundColor: GRAY_COLOR, opacity: 1, textContent: (_, i:number) => {
                                                                     switch (i) {
                                                                         case 0:
                                                                             return '511';
@@ -562,14 +581,14 @@ export default function Dashboard() {
             clearTimeout(loopTimeout);
             cleanup();
         };
-    }, []);
+    }, [viewportWidth]);
 
     return (
         <>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl py-4 px-6">
                 <div className="relative">
-                    <div ref={root} className=" max-h-[33vh] h-80 w-full md:w-3/5 xl:w-2/5 absolute top-10 md:top-30 lg:top-40 right-0 z-10 border-2 border-dashed">
+                    <div ref={root} className=" max-h-[33vh] h-80 w-full md:w-1/2 xl:w-2/5 absolute top-10 md:top-30 lg:top-40 right-0 md:right-10 lg:right-0 z-10">
                         <span className="absolute top-0 left-0 font-mono text-xs md:text-base text-muted-foreground border py-2 px-4 rounded-md" ref={funcLabel} id="funcLabel"></span>
                         <Collection id="a" items={['id','age','n']} />
                         <Collection id="b" items={[511,21,6]} />
@@ -599,7 +618,7 @@ function Collection({ id, items }: { id: string, items: any[] }) {
         >
             {
                 items.map(i => (
-                    <div className="size-7 md:size-10 lg:size-12 rounded bg-[#2369d9] flex  items-center justify-center shrink-0">
+                    <div style={{ opacity: 0 }} className="size-7 md:size-10 lg:size-12 rounded bg-[#2369d9] flex  items-center justify-center shrink-0">
                         <h6 className="text-white text-sm font-medium text-center">{i}</h6>
                     </div>
                 ))
