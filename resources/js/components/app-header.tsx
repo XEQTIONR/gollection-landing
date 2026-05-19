@@ -1,67 +1,128 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { Menu, Search, Book, Wind } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import AppLogo from '@/components/app-logo';
-import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+} from '@/components/ui/command';
 import {
     NavigationMenu,
     NavigationMenuItem,
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { UserMenuContent } from '@/components/user-menu-content';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { useInitials } from '@/hooks/use-initials';
-import { cn, toUrl } from '@/lib/utils';
-import type { BreadcrumbItem, NavItem } from '@/types';
+import { cn } from '@/lib/utils';
+import { docs } from '@/routes';
+import type { BreadcrumbItem, Method, NavItem } from '@/types';
+import GithubLogoOutlineIcon from './icons/github';
+import { Kbd } from '@/components/ui/kbd';
 
 type Props = {
-    breadcrumbs?: BreadcrumbItem[];
+    breadcrumbs?: BreadcrumbItem[]
+    sidebarOpen?: boolean
+    setSidebarOpen?: (open: boolean) => void
 };
 
 const mainNavItems: NavItem[] = [];
 
-const rightNavItems: NavItem[] = [
-    {
-        title: 'Repo',
-        href: 'https://github.com/laravel/react-starter-kit',
-        // icon: Folder,
-    },
-    {
-        title: 'Docs',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        // icon: BookOpen,
-    },
-];
-
 const activeItemStyles =
-    'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+    'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
 
-export function AppHeader({ breadcrumbs = [] }: Props) {
-    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
+export function AppHeader({ breadcrumbs = [], sidebarOpen = false, setSidebarOpen = undefined }: Props) {
+    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl()
+    const { url, props } = usePage<{ methods: Method[] }>()
+    const isDocs = url.includes('docs')
+
+    const [open, setOpen] = useState(false)
+    const [searchQ, setSearchQ] = useState('')
+    const methods = props.methods
+    const [results, setResults] = useState<Method[]>(methods)
+
+    const debouncedSearch = useDebouncedCallback((q: string) => {
+        const r = methods.filter((method: Method) => {
+            const lower = q.toLowerCase()
+
+            return (
+                method.name.toLowerCase().includes(lower) || 
+                method.description.toLowerCase().includes(lower) || 
+                method.code?.toLowerCase().includes(lower)
+            )
+        })
+
+        setResults(r)
+    }, 500)
+
+    useEffect(() => {
+        debouncedSearch(searchQ)
+    }, [searchQ, debouncedSearch])
+
+    useEffect(() => {
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.metaKey && event.key.toLowerCase() === 'k') {
+                setOpen(o => !o)
+            }
+        }
+
+        
+        document.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [searchQ])
+
+    const handleSelect = (result: Method) => {
+        setOpen(false)
+        const elem = document.querySelector(`#${result.name}`)
+
+        if (elem) {
+            elem.scrollIntoView()
+        }
+    }
 
     return (
         <>
-            <div className="border-b border-sidebar-border/80">
+            <CommandDialog open={open} onOpenChange={setOpen}>
+                <Command shouldFilter={false} className="rounded-lg border">
+                    <CommandInput value={searchQ} onInput={e => setSearchQ(e.currentTarget.value)} placeholder="Search the docs..." />
+                    <CommandList>
+                        <CommandEmpty>
+                            
+                            <Wind className="size-4 mx-auto mb-3" />
+                            No results found.
+
+
+                        </CommandEmpty>
+                        <CommandGroup heading={`${results?.length ?? 0} Results `}>
+                            {
+                                results?.map((result) => (
+                                    <CommandItem onSelect={() => handleSelect(result)} key={result.name}>
+                                        {result.name} <span className="text-xs text-ellipsis line-clamp-1 overflow-hidden text-muted-foreground">{result.description}</span>
+                                    </CommandItem>
+                                ))
+                            }
+                        </CommandGroup>
+                        <CommandSeparator />
+                    </CommandList>
+                </Command>
+            </CommandDialog>
+            {/* HERE */}
+            <div className={cn(
+                "border-sidebar-border/80 sticky top-0 z-10 bg-background",
+                isDocs && 'border-b'
+            )}>
                 <div className="mx-auto flex h-16 items-center px-5 md:max-w-352">
                     {/* Mobile Menu */}
                     {/* <div className="lg:hidden">
@@ -123,7 +184,13 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             </SheetContent>
                         </Sheet>
                     </div> */}
-
+                    {
+                        isDocs && (
+                            <Button onClick={() => setSidebarOpen?.(!sidebarOpen)} variant="ghost" size="icon" className="mr-2 h-[34px] w-[34px] lg:hidden">
+                                <Menu className="h-5 w-5 stroke-foreground" />
+                            </Button>
+                        )
+                    }
                     <Link
                         href="/"
                         prefetch
@@ -133,7 +200,17 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="ml-6 hidden h-full items-center space-x-6 lg:flex px-10">
+                    <div className="hidden h-full items-center space-x-6 lg:flex px-10">
+                        {isDocs && (
+                            <>
+                            <Button className="cursor-text text-muted-foreground" variant="ghost" onClick={() => setOpen(true)}>
+                                <Search className="size-4" />
+                                Search ...
+                                
+                            </Button>
+                            <Kbd className="ml-2 tracking-wide">⌘K</Kbd>
+                            </>
+                        )}
                         <NavigationMenu className="flex h-full items-stretch">
                             <NavigationMenuList className="flex h-full items-stretch space-x-2">
                                 {mainNavItems.map((item, index) => (
@@ -168,36 +245,24 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
                     <div className="ml-auto flex items-center space-x-2">
                         <div className="relative flex items-center space-x-1">
-                            {/* <Button
+                        {isDocs &&
+                            <Button
+                                onClick={() => setOpen(true)}
                                 variant="ghost"
                                 size="icon"
-                                className="group h-9 w-9 cursor-pointer"
+                                className="group h-9 w-9 cursor-pointer lg:hidden text-muted-foreground"
                             >
                                 <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button> */}
-                            <div className="ml-1 flex gap-10">
-                                {rightNavItems.map((item) => (
-                                    <Tooltip key={item.title}>
-                                        <TooltipTrigger>
-                                            <a
-                                                href={toUrl(item.href)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="group inline-flex gap-2 h-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-                                            >
-                                                {item.icon && (
-                                                    <item.icon className="size-5 opacity-80 group-hover:opacity-100" />
-                                                )}
-                                                <span className="text-sm">
-                                                    {item.title}
-                                                </span>
-                                            </a>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{item.title}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                ))}
+                            </Button>
+                        }
+                            <div className="ml-1 flex gap-5 items-center">
+                                {!isDocs &&
+                                    <Link className='font-semibold flex items-center text-sm gap-2 px-3 py-1 rounded text-foreground/80 hover:text-primary border-2 border-background hover:border-primary/80 transition-colors duration-300' href={docs()}>
+                                        <Book className="size-4" /> 
+                                        Docs
+                                    </Link>
+                                }
+                                <GithubLogoOutlineIcon onClick={() => window.open('https://github.com/xeqtionr/gollection', '_blank')} className="size-5 cursor-pointer fill-foreground/30 hover:fill-foreground transition-colors duration-300"  />
                             </div>
                         </div>
                         {/* <DropdownMenu>
