@@ -923,6 +923,7 @@ EOD
                 ],
                 'return' => [
                     'The last element and the remaining slice',
+                    'A copy of the slice without the last element',
                 ],
                 'code' => <<<'EOD'
 gollection.Pop([]int{3, 4, 1})

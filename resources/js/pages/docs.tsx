@@ -46,22 +46,22 @@ export default function Docs({ methods }: { methods: Method[] }) {
                     <div className="flex flex-col w-screen lg:w-full h-full pr-11 lg:pr-0">
                         <div id="intro">
                             <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline hover:text-primary">Gollection</h2></a>
-                            <p className="mt-4 mb-4 ml-1 font-sans2">
+                            <p className="mt-4 mb-4 ml-1 font-medium text-neutral-700 dark:text-neutral-400">
                                 A simple go library that provides convenient helpers to work with collections of data.
                                 A Collection is a group of related data like a <b>slice</b> or a <b>map</b>.
                                 
                             </p>
-                            <p className="mt-4 mb-4 ml-1 font-sans2">
+                            <p className="mt-4 mb-4 ml-1 font-medium text-neutral-700 dark:text-neutral-400">
                                 The word <b>"Gollection"</b> is a portmanteau of the words <i>"go"</i> and <i>"collection"</i>.
                             </p>
-                            <p className="mt-4 mb-4 ml-1 font-sans2">
+                            <p className="mt-4 mb-4 ml-1 font-medium text-neutral-700 dark:text-neutral-400">
                                 Current version is <b>1.0</b> <i>(Amethyst)</i>. 
                             </p>
                         </div>
 
                         <div id="getting-started" >
                             <a href="#getting-started"><h2 className="font-semibold text-2xl ml-0.5 hover:underline hover:text-primary">Getting Started</h2></a>
-                            <p className="mt-4 mb-4 ml-1 font-sans2">
+                            <p className="mt-4 mb-4 ml-1 font-medium text-neutral-700 dark:text-neutral-400">
                                 Getting started with Gollection is easy. Just install the package and you're ready to go.
                                 After that you can start using gollection functions.
                             </p>
@@ -84,7 +84,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                 </pre>
                             </div>
                             <h3 className="font-semibold text-lg ml-0.5 mb-2">You're ready to go!</h3>
-                            <p className="mb-3">You can now start using gollection functions on your slices and maps.</p>
+                            <p className="mb-3  font-medium text-neutral-700 dark:text-neutral-400">You can now start using gollection functions on your slices and maps.</p>
                             <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll text-neutral-50">
                                 
                                 <pre>
@@ -108,15 +108,15 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                 {methods.map((method) => (
                                     <div id={method.name} key={method.name}>
                                         <a href={`#${method.name}`}><h2 className="font-semibold text-lg ml-0.5 hover:underline hover:text-primary">{method.name}</h2></a>
-                                        <p className="mt-2 mb-4 ml-1 font-sans2 font-medium">{method.description}</p>
+                                        <p className="mt-2 mb-4 ml-1  font-medium text-neutral-700 dark:text-neutral-400">{method.description}</p>
 
                                         {method.params && (
                                             <div className="w-full flex flex-col gap-4 mb-5">
                                                 <h3 className="font-semibold text-sm ml-0.5">Parameters</h3>
                                                 {Object.entries(method.params).map(([key, value]) => (
                                                     <div className="flex items-center ml-1 mb-2 gap-2" key={key}>
-                                                        <div className="font-medium font-mono text-sm"><span className='bg-muted px-2 py-1 rounded'>{key}</span></div>
-                                                        <div className="font-sans2">{value}</div>
+                                                        <div className="font-medium text-neutral-700 dark:text-neutral-400 font-mono text-sm"><span className='bg-muted px-2 py-1 rounded'>{key}</span></div>
+                                                        <div className="">{value}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -127,7 +127,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                                                 <h3 className="font-semibold text-sm ml-0.5 mb-2">Returns</h3>
                                                 <ol className="list-decimal list-inside">    
                                                     {method.return.map((value) => (
-                                                        <li className="font-sans2 ml-1">{value}</li>
+                                                        <li className="font-medium text-neutral-700 dark:text-neutral-400 ml-1">{value}</li>
                                                     ))}
                                                 </ol>
                                             </div>

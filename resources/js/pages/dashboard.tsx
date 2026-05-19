@@ -607,7 +607,7 @@ export default function Dashboard() {
                         Gollection
                         <span className="text-base  ml-3 lowercase">v1.0</span>
                     </h1>
-                    <p className="text-lg lg:text-xl text-muted-foreground lg:ml-2 md:max-w-[50vw] z-50 relative">
+                    <p className="text-lg lg:text-xl text-muted-foreground lg:ml-2 md:max-w-[50vw] z-50 relative font-sans">
                        A simple Golang library that provides convenient helpers to work with collections of data.
                     </p>
                     <div className="flex gap-4.5 mt-6 z-50 relative">

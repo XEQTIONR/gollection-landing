@@ -11,17 +11,12 @@
 
     
     
-    --font-brand: 'Jost','Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+    --font-brand: 'Jost','Outfit', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
     --font-sans:
-        'Outfit','Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
-
-        --font-sans2:
-        'San Francisco','Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'San Francisco','Outfit', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
     

@@ -266,7 +266,7 @@ export function AppHeader({ breadcrumbs = [], sidebarOpen = false, setSidebarOpe
                         }
                             <div className="ml-1 flex gap-5 items-center">
                                 {!isDocs &&
-                                    <Link className='font-sans2 font-semibold flex items-center text-sm gap-2 px-3 py-1 rounded text-foreground/80 hover:text-primary border-2 border-background hover:border-primary/80 transition-colors duration-300' href={docs()}>
+                                    <Link className='font-semibold flex items-center text-sm gap-2 px-3 py-1 rounded text-foreground/80 hover:text-primary border-2 border-background hover:border-primary/80 transition-colors duration-300' href={docs()}>
                                         <Book className="size-4" /> 
                                         Docs
                                     </Link>
