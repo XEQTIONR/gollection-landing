@@ -19,23 +19,23 @@ export default function Docs({ methods }: { methods: Method[] }) {
                 )}>
                     <ul className="">
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline text-nowrap" href={`#intro`}>
+                            <a className="hover:underline text-nowrap hover:text-primary" href={`#intro`}>
                                 Gollection
                             </a>
                         </li>
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline text-nowrap" href={`#getting-started`}>
+                            <a className="hover:underline text-nowrap hover:text-primary" href={`#getting-started`}>
                                 Getting Started
                             </a>
                         </li>
                         <li className="mb-5 font-medium">
-                            <a className="hover:underline text-nowrap" href={`#available-methods`}>
+                            <a className="hover:underline text-nowrap hover:text-primary" href={`#available-methods`}>
                                 Available Methods
                             </a>
                         </li>
                         {methods.map((method) => (
                             <li className="mb-3 pl-3" key={method.name}>
-                                <a className="hover:underline text-nowrap" href={`#${method.name}`}>
+                                <a className="hover:underline text-nowrap hover:text-primary" href={`#${method.name}`}>
                                     {method.name}
                                 </a>
                             </li>
@@ -45,7 +45,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                 <div className="h-full max-h-[90vh] overflow-y-scroll overflow-x-clip gap-12 px-2 py-2 transition-discrete duration-300">
                     <div className="flex flex-col w-screen lg:w-full h-full pr-11 lg:pr-0">
                         <div id="intro">
-                            <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline">Gollection</h2></a>
+                            <a href="#intro"><h2 className="font-semibold text-2xl ml-0.5 hover:underline hover:text-primary">Gollection</h2></a>
                             <p className="mt-4 mb-4 ml-1 font-sans2">
                                 A simple go library that provides convenient helpers to work with collections of data.
                                 A Collection is a group of related data like a <b>slice</b> or a <b>map</b>.
@@ -60,7 +60,7 @@ export default function Docs({ methods }: { methods: Method[] }) {
                         </div>
 
                         <div id="getting-started" >
-                            <a href="#getting-started"><h2 className="font-semibold text-2xl ml-0.5 hover:underline">Getting Started</h2></a>
+                            <a href="#getting-started"><h2 className="font-semibold text-2xl ml-0.5 hover:underline hover:text-primary">Getting Started</h2></a>
                             <p className="mt-4 mb-4 ml-1 font-sans2">
                                 Getting started with Gollection is easy. Just install the package and you're ready to go.
                                 After that you can start using gollection functions.
@@ -103,14 +103,37 @@ export default function Docs({ methods }: { methods: Method[] }) {
                         </div>
                         
                         <div className="flex flex-col">
-                            <a href="#available-methods"><h2 id="available-methods" className="font-semibold text-2xl ml-0.5 my-6 hover:underline">Available Methods</h2></a>
+                            <a href="#available-methods"><h2 id="available-methods" className="font-semibold text-2xl ml-0.5 my-6 hover:underline hover:text-primary">Available Methods</h2></a>
                             <div className="flex flex-col gap-10">
                                 {methods.map((method) => (
                                     <div id={method.name} key={method.name}>
-                                        <a href={`#${method.name}`}><h2 className="font-semibold text-lg ml-0.5 hover:underline">{method.name}</h2></a>
-                                        <p className="mt-2 mb-4 ml-1 font-sans2">{method.description}</p>
+                                        <a href={`#${method.name}`}><h2 className="font-semibold text-lg ml-0.5 hover:underline hover:text-primary">{method.name}</h2></a>
+                                        <p className="mt-2 mb-4 ml-1 font-sans2 font-medium">{method.description}</p>
+
+                                        {method.params && (
+                                            <div className="w-full flex flex-col gap-4 mb-5">
+                                                <h3 className="font-semibold text-sm ml-0.5">Parameters</h3>
+                                                {Object.entries(method.params).map(([key, value]) => (
+                                                    <div className="flex items-center ml-1 mb-2 gap-2" key={key}>
+                                                        <div className="font-medium font-mono text-sm"><span className='bg-muted px-2 py-1 rounded'>{key}</span></div>
+                                                        <div className="font-sans2">{value}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {method.return && (
+                                            <div className="w-full flex flex-col mb-5">
+                                                <h3 className="font-semibold text-sm ml-0.5 mb-2">Returns</h3>
+                                                <ol className="list-decimal list-inside">    
+                                                    {method.return.map((value) => (
+                                                        <li className="font-sans2 ml-1">{value}</li>
+                                                    ))}
+                                                </ol>
+                                            </div>
+                                        )}
                                         {method.code && (
-                                            <div className="bg-neutral-900 p-4 rounded-lg text-sm overflow-x-scroll text-neutral-50">
+                                            <div className="bg-neutral-900  mb-2 p-4 rounded-lg text-sm overflow-x-scroll text-neutral-50">
                                                 <pre><code className='language-go'>{method.code}</code></pre>
                                             </div>
                                         )}
