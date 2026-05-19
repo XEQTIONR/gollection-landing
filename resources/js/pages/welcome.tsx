@@ -1,20 +1,19 @@
-import { Head, router } from '@inertiajs/react';
-import { createTimeline } from 'animejs';
-import { useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { docs } from '@/routes';
-import { useDebouncedCallback } from 'use-debounce';
-import { useState } from 'react';
+import { Head, router } from '@inertiajs/react'
+import { createTimeline } from 'animejs'
+import { useEffect, useRef, useState } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
+import { Button } from '@/components/ui/button'
+import { docs } from '@/routes'
 
-const BLUE_COLOR = 'oklch(0.6206 0.2121 270)';
-const BLUE_COLOR_OPACITY = 'oklch(0.6206 0.2121 270 / 0.20)';
-const GRAY_COLOR = 'oklch(0.7467 0 0)';
-const GREEN_COLOR = 'oklch(0.7 0.1751 163.06)';
-const TRANSPARENT_COLOR = 'oklch(0 0 0 / 0%)';
+const BLUE_COLOR = 'oklch(0.6206 0.2121 270)'
+const BLUE_COLOR_OPACITY = 'oklch(0.6206 0.2121 270 / 0.20)'
+const GRAY_COLOR = 'oklch(0.7467 0 0)'
+const GREEN_COLOR = 'oklch(0.7 0.1751 163.06)'
+const TRANSPARENT_COLOR = 'oklch(0 0 0 / 0%)'
 
 const PADDING = 10;
 
-export default function Dashboard() {
+export default function Welcome() {
 
     const root = useRef<HTMLDivElement | null>(null)
     const funcLabel = useRef<HTMLSpanElement | null>(null)
@@ -37,64 +36,64 @@ export default function Dashboard() {
     useEffect(() => {
         const LOOP_DELAY = 1000;
         let cancelled = false;
-        let loopTimeout: ReturnType<typeof setTimeout> | undefined;
+        let loopTimeout: ReturnType<typeof setTimeout> | undefine
 
-        let phase1: ReturnType<typeof createTimeline> | null = null;
-        let phase2: ReturnType<typeof createTimeline> | null = null;
-        let phase3: ReturnType<typeof createTimeline> | null = null;
-        let phase4: ReturnType<typeof createTimeline> | null = null;
-        let phase5: ReturnType<typeof createTimeline> | null = null;
-        let phase6: ReturnType<typeof createTimeline> | null = null;
-        let phase7: ReturnType<typeof createTimeline> | null = null;
+        let phase1: ReturnType<typeof createTimeline> | null = null
+        let phase2: ReturnType<typeof createTimeline> | null = null
+        let phase3: ReturnType<typeof createTimeline> | null = null
+        let phase4: ReturnType<typeof createTimeline> | null = null
+        let phase5: ReturnType<typeof createTimeline> | null = null
+        let phase6: ReturnType<typeof createTimeline> | null = null
+        let phase7: ReturnType<typeof createTimeline> | null = null
 
-        const rootWidth = root.current?.clientWidth || 0;
-        const aWidth = document.getElementById('a')?.clientWidth || 0;
-        const itemWidth = document.querySelector('#a div')?.clientWidth || 0;
+        const rootWidth = root.current?.clientWidth || 0
+        const aWidth = document.getElementById('a')?.clientWidth || 0
+        const itemWidth = document.querySelector('#a div')?.clientWidth || 0
 
         const removeDynamicClones = () => {
             root.current?.querySelectorAll('[id^="clone"]').forEach((el) => el.remove())
         };
 
         const resetSourceElements = () => {
-            const aLabels = ['id', 'age', 'n'];
+            const aLabels = ['id', 'age', 'n']
             document.querySelectorAll('#a div h6').forEach((el, i) => {
                 if (aLabels[i]) {
-                    el.textContent = aLabels[i];
+                    el.textContent = aLabels[i]
                 }
             });
         };
 
         const cleanup = () => {
-            phase1?.revert();
-            phase2?.revert();
-            phase3?.revert();
-            phase4?.revert();
-            phase5?.revert();
-            phase6?.revert();
-            phase7?.revert();
-            phase1 = phase2 = phase3 = phase4 = phase5 = phase6 = phase7 = null;
-            removeDynamicClones();
-            resetSourceElements();
+            phase1?.revert()
+            phase2?.revert()
+            phase3?.revert()
+            phase4?.revert()
+            phase5?.revert()
+            phase6?.revert()
+            phase7?.revert()
+            phase1 = phase2 = phase3 = phase4 = phase5 = phase6 = phase7 = null
+            removeDynamicClones()
+            resetSourceElements()
         };
 
         const scheduleRestart = () => {
             if (cancelled) {
-                return;
+                return
             }
 
             loopTimeout = setTimeout(() => {
                 if (!cancelled) {
-                    runSequence();
+                    runSequence()
                 }
-            }, LOOP_DELAY);
+            }, LOOP_DELAY)
         };
 
         const runSequence = () => {
             if (cancelled || rootWidth <= 0) {
-                return;
+                return
             }
 
-            cleanup();
+            cleanup()
 
             phase1 = createTimeline()
                 .set('#a,#b', { top: aWidth/3, borderWidth: '5px', borderColor: BLUE_COLOR, backgroundColor: BLUE_COLOR_OPACITY, opacity: 1 }, 0)
@@ -119,7 +118,7 @@ export default function Dashboard() {
                     const cloneB = document.getElementById('b')?.cloneNode(true) as HTMLElement;
 
                     if (!cloneA || !cloneB) {
-                        return;
+                        return
                     }
 
                     cloneA.id = 'cloneA';
@@ -128,22 +127,22 @@ export default function Dashboard() {
                     cloneB.style.opacity = '0';
                     cloneA.style.zIndex = '-1';
                     cloneB.style.zIndex = '-1';
-                    root.current?.appendChild(cloneA);
-                    root.current?.appendChild(cloneB);
+                    root.current?.appendChild(cloneA)
+                    root.current?.appendChild(cloneB)
 
                     if (cloneA.children[2]) {
-                        cloneA.removeChild(cloneA.children[2]);
+                        cloneA.removeChild(cloneA.children[2])
                     }
 
                     if (cloneB.children[1]) {
-                        cloneB.children[1].innerHTML = '11';
+                        cloneB.children[1].innerHTML = '11'
                     }
 
                     if (cloneB.children[2]) {
-                        cloneB.removeChild(cloneB.children[2]);
+                        cloneB.removeChild(cloneB.children[2])
                     }
 
-                    const cloneHeight = aWidth * (2 / 3) + 15;
+                    const cloneHeight = aWidth * (2 / 3) + 15
                     const label = funcLabel.current!
 
                     phase2 = createTimeline()
@@ -182,8 +181,8 @@ export default function Dashboard() {
                         }, 400)
 
                     phase2.call(() => {
-                        const cloneAEl = document.getElementById('cloneA');
-                        const cloneBEl = document.getElementById('cloneB');
+                        const cloneAEl = document.getElementById('cloneA')
+                        const cloneBEl = document.getElementById('cloneB')
 
                         if (cloneAEl && root.current?.contains(cloneAEl)) {
                             root.current.removeChild(cloneAEl);
@@ -205,11 +204,11 @@ export default function Dashboard() {
                             .set('#a div', { textContent: (_, i: number) => {
                                 switch (i) {
                                     case 0:
-                                        return 'joe';
+                                        return 'joe'
                                     case 1:
-                                        return 'fin';
+                                        return 'fin'
                                     case 2:
-                                        return 'tim';
+                                        return 'tim'
                                 }
                             } }, 0)
                             .add('#funcLabel', { y: '-10px', opacity: 1, delay: 0, duration: 1000, textContent: 'gollection.CrossJoin(fields, values)' }, 0)
@@ -236,35 +235,35 @@ export default function Dashboard() {
                                 })
 
                                 bDivs.forEach((bDiv, j) => {
-                                    const clones = [];
+                                    const clones = []
 
                                     for (let i = 0; i < 3; i++) {
-                                        const clone = bDiv.cloneNode(true) as HTMLElement;
-                                        clone.id = `cloneA-${j}-copy-${i}`;
-                                        clone.style.opacity = '0';
-                                        root.current?.appendChild(clone);
-                                        clones.push(clone);
+                                        const clone = bDiv.cloneNode(true) as HTMLElement
+                                        clone.id = `cloneA-${j}-copy-${i}`
+                                        clone.style.opacity = '0'
+                                        root.current?.appendChild(clone)
+                                        clones.push(clone)
                                     }
 
-                                    bClones.push(clones);
+                                    bClones.push(clones)
                                 })
 
 
                                 for (let i = 0; i < 9; i++) {
-                                    const input = document.querySelector('#a')!.cloneNode(true) as HTMLElement;
+                                    const input = document.querySelector('#a')!.cloneNode(true) as HTMLElement
 
                                     while (input.children.length > 0) {
-                                        input.removeChild(input.children[0]);
+                                        input.removeChild(input.children[0])
                                     }
 
-                                    input.id = `clone-${i}`;
-                                    root.current?.appendChild(input);
-                                    input.style.border = `2px dashed ${BLUE_COLOR}`;
-                                    input.style.opacity = '0';
-                                    input.style.position = 'absolute';
-                                    input.style.top = '0';
-                                    input.style.left = '-10px';
-                                    input.style.zIndex = '5';
+                                    input.id = `clone-${i}`
+                                    root.current?.appendChild(input)
+                                    input.style.border = `2px dashed ${BLUE_COLOR}`
+                                    input.style.opacity = '0'
+                                    input.style.position = 'absolute'
+                                    input.style.top = '0'
+                                    input.style.left = '-10px'
+                                    input.style.zIndex = '5'
                                     input.style.width = aWidth*(2/3) + 10 + 'px'
                                 }
 
@@ -275,17 +274,17 @@ export default function Dashboard() {
                                 }
 
                                 outerContainer.id = `clone-Container`
-                                root.current?.appendChild(outerContainer);
-                                outerContainer.style.border = `5px solid ${BLUE_COLOR}`;
-                                outerContainer.style.opacity = '0';
-                                outerContainer.style.position = 'absolute';
-                                outerContainer.style.top = itemWidth + 'px';
-                                outerContainer.style.left = '0';
-                                outerContainer.style.zIndex = '3';
+                                root.current?.appendChild(outerContainer)
+                                outerContainer.style.border = `5px solid ${BLUE_COLOR}`
+                                outerContainer.style.opacity = '0'
+                                outerContainer.style.position = 'absolute'
+                                outerContainer.style.top = itemWidth + 'px'
+                                outerContainer.style.left = '0'
+                                outerContainer.style.zIndex = '3'
                                 outerContainer.style.width = aWidth * 3 + 'px'
                                 outerContainer.style.height = (itemWidth * 3) + (12 * PADDING) + 'px'
 
-                                phase4 = createTimeline();
+                                phase4 = createTimeline()
 
                                 for (let i = 0; i < 3; i++) {
                                     aClones[i].forEach((clone, j) => {
@@ -399,21 +398,21 @@ export default function Dashboard() {
                                         .set('#a div', { textContent: (_, i: number) => {
                                             switch (i) {
                                                 case 0:
-                                                    return 'joe';
+                                                    return 'joe'
                                                 case 1:
-                                                    return 'fin';
+                                                    return 'fin'
                                                 case 2:
-                                                    return 'tim';
+                                                    return 'tim'
                                             }
                                         } }, 0)
                                         .set('#b div', { textContent: (_, i: number) => {
                                             switch (i) {
                                                 case 0:
-                                                    return 'tim';
+                                                    return 'tim'
                                                 case 1:
-                                                    return 'joe';
+                                                    return 'joe'
                                                 case 2:
-                                                    return 'joe';
+                                                    return 'joe'
                                             }
                                         } }, 0)
                                         
@@ -423,11 +422,11 @@ export default function Dashboard() {
                                                     switch (i) {
                                                         
                                                         case 0:
-                                                            return 'joe';
+                                                            return 'joe'
                                                         case 1:
-                                                            return 'fin';
+                                                            return 'fin'
                                                         case 2:
-                                                            return 'tim';
+                                                            return 'tim'
                                                     }
                                                } }, 0)
                                                .add(aClone, { opacity: 1 }, 1000)
@@ -486,21 +485,21 @@ export default function Dashboard() {
                                                 .set('#a div', { textContent: (_, i: number) => {
                                                     switch (i) {
                                                         case 0:
-                                                            return 'tim';
+                                                            return 'tim'
                                                         case 1:
-                                                            return 'tim';
+                                                            return 'tim'
                                                         case 2:
-                                                            return 'fin';
+                                                            return 'fin'
                                                     }
                                                 } }, 0)
                                                 .set('#b div', { textContent: (_, i: number) => {
                                                     switch (i) {
                                                         case 0:
-                                                            return 'tom';
+                                                            return 'tom'
                                                         case 1:
-                                                            return 'jon';
+                                                            return 'jon'
                                                         case 2:
-                                                            return 'tim';
+                                                            return 'tim'
                                                     }
                                                 } }, 0)
                                                 .set('#a', { left: 0 }, 0)
@@ -549,11 +548,11 @@ export default function Dashboard() {
                                                                 .set('#clone-b div', { zIndex: 3, backgroundColor: GRAY_COLOR, opacity: 1, textContent: (_, i:number) => {
                                                                     switch (i) {
                                                                         case 0:
-                                                                            return '511';
+                                                                            return '511'
                                                                         case 1:
-                                                                            return '11';
+                                                                            return '11'
                                                                         case 2:
-                                                                            return '6';
+                                                                            return '6'
                                                                     }
                                                                 } }, 0)
                                                                     
@@ -584,14 +583,14 @@ export default function Dashboard() {
                 .play() // phase1.play();
         };
 
-        runSequence();
+        runSequence()
 
         return () => {
-            cancelled = true;
-            clearTimeout(loopTimeout);
-            cleanup();
+            cancelled = true
+            clearTimeout(loopTimeout)
+            cleanup()
         };
-    }, [viewportWidth]);
+    }, [viewportWidth])
 
     return (
         <>
@@ -637,6 +636,6 @@ function Collection({ id, items }: { id: string, items: any[] }) {
     )
 }
 
-Dashboard.layout = {
+Welcome.layout = {
     breadcrumbs: [],
-};
+}

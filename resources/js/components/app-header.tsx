@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Menu, Search, Book, Wind } from 'lucide-react';
+import { Menu, Search, Book, Wind } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import AppLogo from '@/components/app-logo';
@@ -35,19 +35,6 @@ type Props = {
 };
 
 const mainNavItems: NavItem[] = [];
-
-// const rightNavItems: NavItem[] = [
-//     {
-//         title: 'Repo',
-//         href: 'https://github.com/laravel/react-starter-kit',
-//         icon: Github
-//     },
-//     {
-//         title: 'Docs',
-//         href: docs(),
-//         icon: BookOpen,
-//     },
-// ];
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
@@ -131,7 +118,11 @@ export function AppHeader({ breadcrumbs = [], sidebarOpen = false, setSidebarOpe
                     </CommandList>
                 </Command>
             </CommandDialog>
-            <div className="border-b border-sidebar-border/80 sticky top-0 z-10 bg-background">
+            {/* HERE */}
+            <div className={cn(
+                "border-sidebar-border/80 sticky top-0 z-10 bg-background",
+                isDocs && 'border-b'
+            )}>
                 <div className="mx-auto flex h-16 items-center px-5 md:max-w-352">
                     {/* Mobile Menu */}
                     {/* <div className="lg:hidden">

@@ -13,9 +13,9 @@ export default function Docs({ methods }: { methods: Method[] }) {
             
             <div className="flex flex-row items-stretch gap-4 overflow-visible rounded-xl max-h-screen">
                 <div className={cn(
-                     "border-r py-4 h-full sticky top-18 max-h-[90vh] overflow-y-scroll transition-discrete duration-300",
+                     "md:border-r py-4 h-full sticky top-18 max-h-[90vh] overflow-y-scroll transition-discrete duration-300",
                      "lg:min-w-60 lg:flex lg:px-6",
-                     sidebarOpen ? "min-w-68 w-68 pl-8"  : "min-w-0 w-0 px-0",
+                     sidebarOpen ? "min-w-68 w-68 pl-8 border-r"  : "min-w-0 w-0 px-0",
                 )}>
                     <ul className="">
                         <li className="mb-5 font-medium">
