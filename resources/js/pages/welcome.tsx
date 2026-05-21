@@ -101,7 +101,7 @@ export default function Welcome() {
                 .set('#b', { left: aWidth*2, zIndex: 2 }, 0)
                 .set('#funcLabel', { opacity: 0 }, 0)
                 .set('#a div,#b div', { backgroundColor: BLUE_COLOR, opacity: 1 }, 0)
-                .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Combine(fields, values)' }, 0)
+                .add('#funcLabel', { y: '-10px', opacity: 1, delay: 100, duration: 1000, textContent: 'gollection.Combine(slice, otherSlice)' }, 0)
                 .add('#a', { duration: 500, delay: 1000, x: `${aWidth/2}px`, }, 0)
                 .add('#b', { duration: 500, delay: 1000, x: `-${aWidth/2}px`, }, 0)
                 .add('#a div', { duration: 500, y: (_, i: number) => `${((aWidth/3) * (i+1)) + 10}px`, x: (_, i: number) => `-${(((aWidth/3)-2) * (i))}px`}, 1500)
@@ -177,7 +177,7 @@ export default function Welcome() {
                             opacity: [0, 1],
                             delay: 0,
                             duration: 1000,
-                            textContent: 'gollection.CombineMap(fields, values)',
+                            textContent: 'gollection.CombineMap(map, otherMap)',
                         }, 400)
 
                     phase2.call(() => {
@@ -211,7 +211,7 @@ export default function Welcome() {
                                         return 'tim'
                                 }
                             } }, 0)
-                            .add('#funcLabel', { y: '-10px', opacity: 1, delay: 0, duration: 1000, textContent: 'gollection.CrossJoin(fields, values)' }, 0)
+                            .add('#funcLabel', { y: '-10px', opacity: 1, delay: 0, duration: 1000, textContent: 'gollection.CrossJoin(slice, otherSlice)' }, 0)
                             .call(() => {
                                 const aDivs = document.querySelectorAll('#a div')
                                 const bDivs = document.querySelectorAll('#b div')
